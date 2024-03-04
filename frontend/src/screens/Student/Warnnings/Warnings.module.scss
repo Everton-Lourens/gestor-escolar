@@ -1,0 +1,45 @@
+@import "../../../../styles/colors.scss";
+
+.viewDesktop {
+  display: flex;
+}
+.viewMobile {
+  display: none;
+}
+
+.warningDetails {
+  background: $primary-color;
+  color: $white-color;
+  box-shadow: 1px 2px 4px rgb(0 0 0 / 0.1);
+
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  font-weight: 500;
+  font-size: 0.875rem;
+
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+
+  cursor: pointer;
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+
+  .icon {
+    height: 1rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .viewDesktop {
+    display: none;
+  }
+  .viewMobile {
+    display: flex;
+  }
+}
