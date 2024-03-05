@@ -41,7 +41,7 @@ export function Students() {
         setStudents(res.data.items)
       })
       .catch((err) => {
-        console.log('ERRO AO BUSCAR DISCIPLINAS, ', err)
+        console.log('ERRO AO BUSCAR TURMAS, ', err)
       })
       .finally(() => {
         setLoadingStudents(false)

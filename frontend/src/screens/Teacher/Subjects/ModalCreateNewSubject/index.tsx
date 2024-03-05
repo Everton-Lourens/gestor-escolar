@@ -56,7 +56,7 @@ export function ModalCreateNewSubject({
           ...alertNotifyConfigs,
           open: true,
           type: 'success',
-          text: 'Disciplina cadastrada com sucesso',
+          text: 'Turma cadastrada com sucesso',
         })
 
         setNewSubjectData(defaultNewSubjectValues)
@@ -69,7 +69,7 @@ export function ModalCreateNewSubject({
           open: true,
           type: 'error',
           text:
-            'Erro ao tentar cadastrar disciplina ' +
+            'Erro ao tentar cadastrar turma ' +
             `(${err?.response?.data?.message || err?.message})`,
         })
       })
@@ -96,7 +96,7 @@ export function ModalCreateNewSubject({
           ...alertNotifyConfigs,
           open: true,
           type: 'success',
-          text: 'Dados da disciplina atualizados com sucesso',
+          text: 'Dados da turma atualizados com sucesso',
         })
         setNewSubjectData(defaultNewSubjectValues)
         handleClose()
@@ -108,7 +108,7 @@ export function ModalCreateNewSubject({
           open: true,
           type: 'error',
           text:
-            'Erro ao tentar atualizar dados da disciplina ' +
+            'Erro ao tentar atualizar dados da turma ' +
             `(${err?.response?.data?.message || err?.message})`,
         })
       })
@@ -122,7 +122,7 @@ export function ModalCreateNewSubject({
       open={open}
       handleClose={handleClose}
       onSubmit={subjectDataToEdit ? onEditSubject : onCreateNewSubject}
-      title="Cadastro de disciplina"
+      title="Cadastro de turma"
       submitButtonText="Cadastrar"
       loading={loadingCreateNewSubject}
     >

@@ -48,14 +48,14 @@ export function Grades() {
           loading={loadingGrades}
           columns={columns}
           rows={grades}
-          emptyText="Você não está cadastrado em nenhuma disciplina"
+          emptyText="Você não está cadastrado em nenhuma turma"
         />
       </div>
       <div className={style.viewMobile}>
         <ListMobile
           collapseItems={columns}
           items={grades}
-          emptyText="Você não está cadastrado em nenhuma disciplina"
+          emptyText="Você não está cadastrado em nenhuma turma"
           loading={loadingGrades}
           itemFields={fieldsMobile}
         />

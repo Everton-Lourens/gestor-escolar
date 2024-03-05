@@ -16,7 +16,7 @@ export function useColumns() {
         params?.value?.code || '--',
     },
     {
-      headerName: 'Disciplina',
+      headerName: 'Turma',
       field: 'subject',
       valueFormatter: (params: CellFunctionParams<any>) =>
         params?.value?.name || '--',

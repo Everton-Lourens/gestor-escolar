@@ -49,7 +49,7 @@ export function ModalAddStudents({
           ...alertNotifyConfigs,
           open: true,
           type: 'success',
-          text: 'Alunos associados com sucesso',
+          text: 'Presença marcada com sucesso',
         })
         getSubjects()
         handleClose()
@@ -60,7 +60,7 @@ export function ModalAddStudents({
           open: true,
           type: 'error',
           text:
-            'Erro ao tentar associar alunos ' +
+            'Erro ao tentar marcar presença dos alunos ' +
             `(${err?.response?.data?.message || err?.message})`,
         })
       })
@@ -87,7 +87,7 @@ export function ModalAddStudents({
           ...alertNotifyConfigs,
           open: true,
           type: 'success',
-          text: 'Alunos removidos com sucesso',
+          text: 'Falta marcada com sucesso',
         })
         getSubjects()
         handleClose()
@@ -98,7 +98,7 @@ export function ModalAddStudents({
           open: true,
           type: 'error',
           text:
-            'Erro ao tentar remover alunos ' +
+            'Erro ao tentar marcar falta dos alunos ' +
             `(${err?.response?.data?.message || err?.message})`,
         })
       })
@@ -186,9 +186,10 @@ export function ModalAddStudents({
       handleClose={handleClose}
       onSubmit={getSubmitFunction()}
       title={
-        menuSelected === 'included' ? 'Remover alunos' : 'Adicionar alunos'
+        (menuSelected === 'included' ? 'ALUNOS PRESENTES' : 'ALUNOS FALTANTES') +
+        ` — (${new Date().toLocaleDateString('pt-BR')})`
       }
-      submitButtonText={menuSelected === 'included' ? 'Remover' : 'Adicionar'}
+      submitButtonText={menuSelected === 'included' ? 'MARCAR FALTA >' : '< MARCAR PRESENÇA'}
       loading={loadingForm}
       customStyleButton={
         menuSelected === 'other' ? { backgroundColor: '#3264ff' } : {}
@@ -205,7 +206,7 @@ export function ModalAddStudents({
           students={registeredStudents}
           handleSelectItem={handleSelectStudentToRemove}
           loading={loadingGetStudents}
-          emptyText="Nenhum aluno incluído na disciplina"
+          emptyText="Nenhum aluno incluído na turma"
         />
       )}
 

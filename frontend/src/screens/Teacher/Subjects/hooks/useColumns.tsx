@@ -33,7 +33,7 @@ export function useColumns({
         params.value || '--',
     },
     {
-      headerName: 'Quantidade de alunos',
+      headerName: 'Quantidade de presenças',
       field: 'students',
       valueFormatter: (params: CellFunctionParams<Subject>) =>
         params?.value?.length || 0,

@@ -16,7 +16,7 @@ export function MenuSelectList({ menuSelected, setMenuSelected }: Props) {
         type="button"
         className={style.included}
       >
-        Incluídos
+        Alunos com presença
       </button>
       <button
         onClick={() => {
@@ -26,7 +26,7 @@ export function MenuSelectList({ menuSelected, setMenuSelected }: Props) {
         className={style.other}
         type="button"
       >
-        Outros alunos
+        Alunos com falta
       </button>
     </nav>
   )

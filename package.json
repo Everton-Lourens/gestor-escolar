@@ -1,0 +1,13 @@
+{
+  "name": "gestor-escolar",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">🏫 Sistema Escolar</h1>",
+  "main": "index.js",
+  "scripts": {
+    "start-back": "cd backend && npm start",
+    "start-front": "cd frontend && npm start",
+    "start": "npm run start-back && npm run start-front"
+  },
+  "author": "",
+  "license": "ISC"
+}

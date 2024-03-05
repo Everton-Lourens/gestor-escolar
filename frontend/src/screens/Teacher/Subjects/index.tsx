@@ -39,10 +39,43 @@ export function Subjects() {
     subjectsService
       .getAll()
       .then((res) => {
+        for (let i = 0; i < res.data.items.length; i++) {
+          const dateFromAPI = new Date(res.data.items[i].createdAt);
+          const currentDate = new Date();
+          // Cria novos objetos Date apenas para representar o dia (ignorando horas, minutos, segundos)
+          const apiDateOnly = new Date(dateFromAPI.getFullYear(), dateFromAPI.getMonth(), dateFromAPI.getDate());
+          const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+          // Compara os valores numéricos dos objetos Date criados
+          const datesAreEqual = apiDateOnly.getTime() === currentDateOnly.getTime(); // Retorna true se o dia, mês e ano forem iguais
+          const idSubject = res.data.items[i]._id;
+          
+          if (!datesAreEqual) {
+            subjectsService
+              .delete({ idSubject: idSubject })
+              .then(() => {
+                setAlertNotifyConfigs({
+                  ...alertNotifyConfigs,
+                  open: true,
+                  type: 'success',
+                  text: 'Turma excluída com sucesso',
+                })
+                getSubjects()
+              })
+              .catch((err) => {
+                setAlertNotifyConfigs({
+                  ...alertNotifyConfigs,
+                  open: true,
+                  type: 'error',
+                  text: `Erro ao tentar excluir turma (${err.response.data.message})`,
+                })
+              })
+          }
+        }
+
         setSubjects(res.data.items)
       })
       .catch((err) => {
-        console.log('ERRO AO BUSCAR DISCIPLINAS, ', err)
+        console.log('ERRO AO BUSCAR TURMAS, ', err)
       })
       .finally(() => {
         setLoadingSubjects(false)
@@ -58,7 +91,7 @@ export function Subjects() {
       ...alertDialogConfirmConfigs,
       open: true,
       title: 'Alerta de confirmação',
-      text: 'Deseja realmente excluir esta disciplina?',
+      text: 'Deseja realmente excluir esta turma?',
       onClickAgree: () => {
         subjectsService
           .delete({ idSubject: subject?._id })
@@ -67,7 +100,7 @@ export function Subjects() {
               ...alertNotifyConfigs,
               open: true,
               type: 'success',
-              text: 'Disciplina excluída com sucesso',
+              text: 'Turma excluída com sucesso',
             })
             getSubjects()
           })
@@ -76,7 +109,7 @@ export function Subjects() {
               ...alertNotifyConfigs,
               open: true,
               type: 'error',
-              text: `Erro ao tentar excluir disciplina (${err.response.data.message})`,
+              text: `Erro ao tentar excluir turma (${err.response.data.message})`,
             })
           })
       },
@@ -104,8 +137,8 @@ export function Subjects() {
   return (
     <>
       <HeaderPage
-        buttonText="Nova disciplina"
-        InputFilter={<h3>Disciplinas</h3>}
+        buttonText="Nova turma"
+        InputFilter={<h3>Turmas - {new Date().toLocaleDateString('pt-BR')}</h3>}
         onClickFunction={() => {
           setFormModalOpened(true)
         }}
@@ -116,7 +149,7 @@ export function Subjects() {
           loading={loadingSubjects}
           columns={columns}
           rows={subjects}
-          emptyText="Nenhuma disciplina cadastrada"
+          emptyText="Nenhuma turma cadastrada"
         />
       </div>
       <div className={style.viewMobile}>
@@ -125,7 +158,7 @@ export function Subjects() {
           collapseItems={columns}
           itemFields={fieldsMobile}
           items={subjects}
-          emptyText="Nenhuma disciplina cadastrada"
+          emptyText="Nenhuma turma cadastrada"
         />
       </div>
 
