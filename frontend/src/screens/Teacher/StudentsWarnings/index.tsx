@@ -25,7 +25,7 @@ export function StudentsWarnings() {
 
   function getStudents() {
     setLoadingStudents(true)
-    studentsService
+    studentsService 
       .getAll()
       .then((res) => {
         setStudents(res.data.items)

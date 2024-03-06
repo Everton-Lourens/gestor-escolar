@@ -112,6 +112,7 @@ export function ModalAddStudents({
     studentsService
       .getAll()
       .then((res) => {
+        console.log('================, \n' );
         separateStudents(res.data.items)
       })
       .catch((err) => {
@@ -186,10 +187,14 @@ export function ModalAddStudents({
       handleClose={handleClose}
       onSubmit={getSubmitFunction()}
       title={
-        (menuSelected === 'included' ? 'ALUNOS PRESENTES' : 'ALUNOS FALTANTES') +
+        (menuSelected === 'included' ? 'ALUNOS DESTA TURMA' : 'TODOS OS ALUNOS')
+
+        /* NÃO MOSTRA MAIS A DATA AO LADO DO TITULO
+        (menuSelected === 'included' ? 'ALUNOS DESTA TURMA' : 'TODOS OS ALUNOS') +
         ` — (${new Date().toLocaleDateString('pt-BR')})`
+        */
       }
-      submitButtonText={menuSelected === 'included' ? 'MARCAR FALTA >' : '< MARCAR PRESENÇA'}
+      submitButtonText={menuSelected === 'included' ? 'Remover >' : '< Adicionar à turma'}
       loading={loadingForm}
       customStyleButton={
         menuSelected === 'other' ? { backgroundColor: '#3264ff' } : {}

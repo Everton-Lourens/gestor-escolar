@@ -3,12 +3,14 @@ import {
   FormControlLabel,
   List,
   ListItem,
+  Button,
   ListItemButton,
   Skeleton,
 } from '@mui/material'
 import style from './ListMobile.module.scss'
 import { EmptyItems } from '../../../../../components/EmptyItems'
-import { Student } from '..'
+import { Student } from '..';
+import http from '../../../../../api/http';
 
 type Props = {
   students: any[]
@@ -17,6 +19,24 @@ type Props = {
   loading?: boolean
   emptyText?: string
 }
+
+const handleButtonClick = async (item: { _id: any }) => {
+  try {
+    // TRABALHANDO
+    const response = await http.post(`/presence`);
+    console.log('item');
+    console.log(item);
+    console.log('item');
+    return http.post(`/presence`, { body: item })
+
+    console.log(response)
+
+  } catch (error) {
+    // Lógica para lidar com erros de rede ou outros erros
+    //console.error('Erro durante o POST:', error.message);
+  }
+};
+
 
 export function ListStudent({
   students,
@@ -54,6 +74,16 @@ export function ListStudent({
                     />
                   }
                 />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={() => {
+                    handleButtonClick(item)
+                  }}
+                >
+                  Presente
+                </Button>
               </ListItem>
             </div>
           )

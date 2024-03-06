@@ -28,3 +28,17 @@ app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}!`))
 app.get('/', async (req: Request, res: Response) => {
   return res.status(200).send(`<h1>Servidor rodando na porta  ${PORT}</h1>`)
 })
+
+
+app.post('/presence', async (req: Request, res: Response) => {
+    // TRABALHANDO
+
+  try {
+    const { body } = req.body;
+    console.log(body);
+    //app.get('/teacher/absences', async (req: Request, res: Response) => {
+    return res.status(200).send(`<h1>Servidor rodando na porta KKKK ${PORT}</h1>`)
+  } catch (error) {
+    return res.status(404).send({ error: error });
+  }
+})

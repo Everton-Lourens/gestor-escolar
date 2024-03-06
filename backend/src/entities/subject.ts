@@ -1,6 +1,7 @@
 import mongoose, { Types } from 'mongoose'
 import { User } from './user'
 
+
 export interface ISubject {
   _id: Types.ObjectId
   code: string
@@ -19,3 +20,4 @@ const subjectSchema = new mongoose.Schema({
 })
 
 export const SubjectModel = mongoose.model<ISubject>('Subject', subjectSchema)
+
