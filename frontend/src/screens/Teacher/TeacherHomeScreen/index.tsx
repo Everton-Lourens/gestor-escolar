@@ -39,7 +39,7 @@ export function TeacherHomeScreen() {
       image: timetableImage,
       alt: 'Botão de faltas',
       title: 'Faltas',
-      disabled: false,
+      disabled: true,
       onClickCallback: () => {},
     },
   ]
