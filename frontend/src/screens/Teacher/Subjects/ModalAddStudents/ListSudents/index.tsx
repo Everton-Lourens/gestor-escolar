@@ -11,6 +11,7 @@ import style from './ListMobile.module.scss'
 import { EmptyItems } from '../../../../../components/EmptyItems'
 import { Student } from '..';
 import http from '../../../../../api/http';
+import { useState } from 'react';
 
 type Props = {
   students: any[]
@@ -20,23 +21,6 @@ type Props = {
   emptyText?: string
 }
 
-const handleButtonClick = async (item: { _id: any }) => {
-  try {
-    // TRABALHANDO
-    const response = await http.post(`/presence`);
-    console.log('item');
-    console.log(item);
-    console.log('item');
-    return http.post(`/presence`, { body: item })
-
-    console.log(response)
-
-  } catch (error) {
-    // Lógica para lidar com erros de rede ou outros erros
-    //console.error('Erro durante o POST:', error.message);
-  }
-};
-
 
 export function ListStudent({
   students,
@@ -45,11 +29,38 @@ export function ListStudent({
   customCheckboxColor,
   emptyText,
 }: Props) {
+  const [buttonConfigs, setButtonConfigs] = useState<{ [key: string]: { text: string; color: string } }>({});
+
+  const handleButtonClick = async (item: { _id: any }) => {
+  // TRABALHANDO1
+
+    const currentConfig = buttonConfigs[item._id] || { text: 'FALTA', color: 'secondary' };
+
+    setButtonConfigs((prevConfigs) => ({
+      ...prevConfigs,
+      [item._id]: {
+        text: currentConfig.text.includes('FALTA') ? 'PRESENTE' : 'FALTA',
+        color: currentConfig.text.includes('FALTA') ? 'primary' : 'secondary', // ou qualquer outra cor desejada
+      },
+    }));
+
+    let callList = false;
+    if (currentConfig.text.includes('FALTA')) // CLICOU EM PRESENÇA?? QUER MARCAR FALTA E VICE VERSA!
+      callList = true;
+
+    item.presence = callList;
+
+    await http.post(`/presence`, { user: item, presence: callList });
+  };
+
+
   return (
     <List className={style.list}>
       {!loading &&
         students?.length > 0 &&
         students?.map((item: any) => {
+          const buttonConfig = buttonConfigs[item._id] || { text: 'FALTA', color: 'secondary' };
+
           return (
             <div
               style={{ opacity: loading ? 0.5 : 1 }}
@@ -76,18 +87,19 @@ export function ListStudent({
                 />
                 <Button
                   variant="contained"
-                  color="primary"
+                  color={buttonConfig.color}
                   size="small"
                   onClick={() => {
                     handleButtonClick(item)
                   }}
                 >
-                  Presente
+                  {buttonConfig.text}
                 </Button>
               </ListItem>
             </div>
           )
         })}
+
 
       {(students.length === 0 || !students) && !loading && (
         <EmptyItems text={emptyText || 'Nenhum aluno encontrado'} />
@@ -115,3 +127,32 @@ export function ListStudent({
     </List>
   )
 }
+
+
+/*
+<Button
+  variant="contained"
+  color="secondary"  // Alterado para a cor vermelha (pode variar dependendo do tema)
+  size="small"
+  onClick={() => {
+    handleButtonClick(item)
+  }}
+>
+  Falta
+</Button>
+*/
+
+
+
+
+/*<Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={() => {
+                    handleButtonClick(item)
+                  }}
+                >
+                  {buttonText}
+                </Button>
+                */
