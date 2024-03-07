@@ -5,7 +5,7 @@ import mongoose, { Types } from 'mongoose'
 
 // Middleware para enviar dados para o mongo
 
-export function sendPresence(
+export function sendClassOffer(
     req: Request,
     res: Response,
     next: NextFunction
@@ -61,7 +61,7 @@ export function sendPresence(
 }
 
 
-export async function getPresenceListForDate(
+export async function getClassOfferListForDate(
     req: Request,
     res: Response,
     next: NextFunction

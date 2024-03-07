@@ -9,7 +9,7 @@ export interface Presence {
 }
 
 const presenceSchema = new mongoose.Schema({
-  presence: { type: Boolean, default: null, },
+  presence: { type: Boolean, default: false, },
   teacher: { type: 'ObjectId', ref: 'User', default: null },
   student: { type: 'ObjectId', ref: 'Student', default: null },
   createdAt: { type: Date, default: Date.now },

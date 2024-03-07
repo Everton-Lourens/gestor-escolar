@@ -7,7 +7,7 @@ import { routes } from './src/shared/infra/http/routes'
 import './src/shared/containers'
 import { Mongoose } from 'mongoose'
 import { handleError } from './src/shared/infra/http/middlewares/handleError'
-import { sendToMongo, getFromMongo } from './src/shared/infra/http/middlewares/presenceCRUD';
+import { sendPresence, getPresenceListForDate } from './src/shared/infra/http/middlewares/presenceCRUD';
 
 interface CustomExpress extends Express {
   mongo?: Mongoose
@@ -31,14 +31,14 @@ app.get('/', async (req: Request, res: Response) => {
 })
 
 
-app.post('/presence', sendToMongo, async (req: Request, res: Response) => {
+app.post('/presence', sendPresence, async (req: Request, res: Response) => {
   // TRABALHANDO2
-  //Envia o body para o middleware "sendToMongo"
+  //Envia o body para o middleware "sendPresence"
   return res.status(200).send(`<h1>PRESENÇA MARCADA COM SUCESSO</h1>`)
 })
 
 
-app.get('/presence/:teacherId', getFromMongo, async (req: Request, res: Response) => {
+app.get('/presence/:teacherId', getPresenceListForDate, async (req: Request, res: Response) => {
     // TRABALHANDO4
 // middleware
 })
