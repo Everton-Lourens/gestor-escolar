@@ -50,7 +50,10 @@ export function ListStudent({
 
     item.presence = callList;
 
-    await http.post(`/presence`, { user: item, presence: callList });
+    console.log(item.presence);
+    console.log(item);
+
+    await http.post(`/presence`, { user: item});
   };
 
 

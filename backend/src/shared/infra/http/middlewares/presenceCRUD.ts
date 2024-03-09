@@ -41,13 +41,14 @@ export async function sendPresence(
         /////////////////////////
         */
 
-        const { _id, teacher, presence } = req.body.user;
+        const { _id, name, teacher, presence } = req.body.user;
 
         // Criando uma nova instância do modelo PresenceModel com as propriedades extraídas.
         const newPresence = new PresenceModel({
             presence,
             teacher,
             student: _id,
+            nameStudent: name,
         })
 
         // Salvando a nova instância no banco de dados.
@@ -71,7 +72,7 @@ export async function getPresenceListForDate(
         // TRABALHANDO5 (GET)
 
         // URL PARA TESTAR a consulta das presenças no dia 07/03/2024:
-        // http://localhost:4444/presence/65e641c85d7e2314d26a6a82?date=2024-03-07
+        // http://localhost:4444/presence/65e641c85d7e2314d26a6a82?date=2024-03-09
 
 
         // Extrai o ID do professor a partir dos parâmetros da requisição.

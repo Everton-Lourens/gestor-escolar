@@ -5,6 +5,7 @@ export interface Presence {
   presence: boolean
   teacher: Types.ObjectId
   student: Types.ObjectId
+  nameStudent: string
   createdAt: Date
 }
 
@@ -12,6 +13,7 @@ const presenceSchema = new mongoose.Schema({
   presence: { type: Boolean, default: false, },
   teacher: { type: 'ObjectId', ref: 'User', default: null },
   student: { type: 'ObjectId', ref: 'Student', default: null },
+  nameStudent: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
 })
 
