@@ -17,56 +17,33 @@ export function useColumns({ handleEditGrades }: Props) {
         params?.value?.name || '--',
     },
     {
-      headerName: 'Total',
+      headerName: 'Nota 1',
       field: 'firstGrade',
       valueFormatter: (params: CellFunctionParams<Grade>) =>
         (params?.value || 0).toFixed(2),
     },
     {
-      headerName: '',
+      headerName: 'Nota 2',
+      field: 'secondGrade',
+      valueFormatter: (params: CellFunctionParams<Grade>) =>
+        (params?.value || 0).toFixed(2),
+    },
+    {
+      headerName: 'Total',
+      field: 'total',
+      valueFormatter: (params: CellFunctionParams<Grade>) =>
+        ((params?.data.firstGrade + params.data.secondGrade || 0) / 2).toFixed(
+          2,
+        ),
+    },
+    {
+      headerName: 'Alterar',
       field: 'acoes',
       type: 'actions',
       cellRenderer: (params: CellFunctionParams<Grade>) => {
-        //console.log('@@@@@@@@@@@@@@@');
-        //console.log(params.data);
-        /*
-{
-    "_id": "65eb7a078b29e359dfd48665",
-    "student": {
-        "_id": "65e73c908ca2b06d027a76d0",
-        "code": "3",
-        "name": "teste",
-        "email": "teste@teste.com",
-        "password": "$2b$10$FxGNH/aoik3ULbG7x1vxuuDpI7GMdweCxP1OUZPzNueNQ7fZX3rE2",
-        "occupation": "student",
-        "avatar": null,
-        "avatarURL": null,
-        "teacher": "65e641c85d7e2314d26a6a82",
-        "warningsAmount": 0,
-        "createdAt": "2024-03-05T15:38:56.030Z",
-        "__v": 0
-    },
-    "subject": {
-        "_id": "65eb74468b29e359dfd4860a",
-        "code": "1",
-        "name": "Jovens",
-        "students": [
-            "65e6421e5d7e2314d26a6aa3",
-            "65e64693c5250fd1e67f8927",
-            "65e73c908ca2b06d027a76d0",
-            "65e7ad442f436f4502356fae"
-        ],
-        "teacher": "65e641c85d7e2314d26a6a82",
-        "createdAt": "2024-03-08T20:25:42.442Z",
-        "__v": 0
-    },
-    "firstGrade": 0,
-    "secondGrade": 0,
-    "createdAt": "2024-03-08T20:50:15.904Z",
-    "__v": 0
-}
-        */
-        //console.log('@@@@@@@@@@@@@@@');
+        console.log('@@@@@@@@@@@@@@@');
+        console.log(params.data);
+        console.log('@@@@@@@@@@@@@@@');
         return (
           <div className={style.actionButtonsContainer}>
             <button

@@ -5,7 +5,7 @@ import mongoose, { Types } from 'mongoose'
 
 // Middleware para enviar dados para o mongo
 
-export function sendPresence(
+export async function sendPresence(
     req: Request,
     res: Response,
     next: NextFunction
@@ -51,7 +51,7 @@ export function sendPresence(
         })
 
         // Salvando a nova instância no banco de dados.
-        newPresence.save();
+        await newPresence.save();
 
         return res.status(200).send(`<h1>sendPresence</h1>`);
 

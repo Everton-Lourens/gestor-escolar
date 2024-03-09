@@ -8,6 +8,7 @@ import './src/shared/containers'
 import { Mongoose } from 'mongoose'
 import { handleError } from './src/shared/infra/http/middlewares/handleError'
 import { sendPresence, getPresenceListForDate } from './src/shared/infra/http/middlewares/presenceCRUD';
+import { sendClassOffer, getClassOfferListForDate } from './src/shared/infra/http/middlewares/[EBD-CRIANDO]classOfferCRUD';
 
 interface CustomExpress extends Express {
   mongo?: Mongoose
@@ -39,6 +40,19 @@ app.post('/presence', sendPresence, async (req: Request, res: Response) => {
 
 
 app.get('/presence/:teacherId', getPresenceListForDate, async (req: Request, res: Response) => {
+    // TRABALHANDO4
+// middleware
+})
+
+
+app.post('/class-offer', sendClassOffer, async (req: Request, res: Response) => {
+  // TRABALHANDO2
+  //Envia o body para o middleware "sendPresence"
+  return res.status(200).send(`<h1>OFERTA ENVIADA COM SUCESSO</h1>`)
+})
+
+
+app.get('/class-offer/:teacherId', getClassOfferListForDate, async (req: Request, res: Response) => {
     // TRABALHANDO4
 // middleware
 })

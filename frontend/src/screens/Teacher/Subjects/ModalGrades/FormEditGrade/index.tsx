@@ -23,8 +23,9 @@ export function FormEditGrade({
       </button>
 
       <CustomTextField
-        label="Nota 1"
+        label="Oferta total"
         value={gradeToEditData.firstGrade}
+        disabled
         onChange={(event) => {
           setGradeToEditData({
             ...gradeToEditData,
@@ -33,7 +34,7 @@ export function FormEditGrade({
         }}
       />
       <CustomTextField
-        label="Nota 2"
+        label="Adicionar oferta"
         value={gradeToEditData.secondGrade}
         onChange={(event) => {
           setGradeToEditData({

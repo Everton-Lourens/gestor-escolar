@@ -1,11 +1,11 @@
 
 import { NextFunction, Request, Response } from 'express'
-import { PresenceModel } from '../../../../entities/presence'
+import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 
 // Middleware para enviar dados para o mongo
 
-export function sendClassOffer(
+export async function sendClassOffer(
     req: Request,
     res: Response,
     next: NextFunction
@@ -13,50 +13,31 @@ export function sendClassOffer(
     try { // TRABALHANDO3 (SAVE)
 
         // Verificando se a requisição, o corpo da requisição ou o usuário no corpo da requisição são nulos ou inválidos
-        if (!req || !req.body || !req.body.user)
-            return res.status(400).send(`<h1>Corpo da requisição ausente ou inválido</h1> <p>- req: ${!!req}<br>- body: ${!!req?.body}<br>- user: ${!!req.body.user}</p>`);
+        if (!req || !req.body || !req.body.data)
+            return res.status(400).send(`<h1>Corpo da requisição ausente ou inválido</h1> <p>- req: ${!!req}<br>- body: ${!!req?.body}<br>- classOffer: ${!!req.body.data}</p>`);
 
-        // Exibindo no console o corpo da requisição (para fins de debug).
-        /*
-        console.log('/////////////////////////');
-        console.log(req?.body);
-        console.log('/////////////////////////');
-        /////////////////////////
-        {
-          user: {
-            _id: '65e6421e5d7e2314d26a6aa3',
-            code: '1',
-            name: 'João',
-            email: 'joao@gmail.com',
-            password: '$2b$10$87rSYt.r32Vxzn06AKMotej1XfOWGcXc/NZzchPI2N25y9UPeCOP2',
-            occupation: 'student',
-            avatar: null,
-            avatarURL: null,
-            teacher: '65e641c85d7e2314d26a6a82',
-            warningsAmount: 1,
-            createdAt: '2024-03-04T21:50:22.772Z',
-            __v: 0
-          }
-        }
-        /////////////////////////
-        */
+        const { student, subject } = req.body.data;
+        const studentId = student._id;
+        const { _id, name, teacher, offer } = subject;
 
-        const { _id, teacher, presence } = req.body.user;
+        const newOffer = (Number(offer) || 0).toFixed(2);
 
-        // Criando uma nova instância do modelo PresenceModel com as propriedades extraídas.
-        const newPresence = new PresenceModel({
-            presence,
+        // Criando uma nova instância do modelo OfferModel com as propriedades extraídas.
+        const sendNewOffer = new OfferModel({
+            subject: _id,
+            className: name,
             teacher,
-            student: _id,
-        })
+            student: studentId,
+            offer: newOffer,
+        });
 
         // Salvando a nova instância no banco de dados.
-        newPresence.save();
+        await sendNewOffer.save();
 
-        return res.status(200).send(`<h1>sendPresence</h1>`);
+        return res.status(200).send(`<h1>sendOffer</h1>`);
 
     } catch (error) {
-        return res.status(404).send(`<h1>Erro ao salvar a presença</h1> <p>${error}</p>`);
+        return res.status(404).send(`<h1>Erro ao salvar a a oferta</h1> <p>${error}</p>`);
     }
 }
 
@@ -70,8 +51,8 @@ export async function getClassOfferListForDate(
 
         // TRABALHANDO5 (GET)
 
-        // URL PARA TESTAR a consulta das presenças no dia 07/03/2024:
-        // http://localhost:4444/presence/65e641c85d7e2314d26a6a82?date=2024-03-07
+        // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
+        // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
 
 
         // Extrai o ID do professor a partir dos parâmetros da requisição.
@@ -92,8 +73,8 @@ export async function getClassOfferListForDate(
         // Converte o ID do professor para um ObjectId do mongoose.
         const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
 
-        // Realiza uma agregação no modelo PresenceModel para obter a lista de presenças
-        const presentList: IPresence[] = await PresenceModel.aggregate([
+
+        const offerList: IOffer[] = await OfferModel.aggregate([
             {
                 $match: {
                     teacher: teacherObjectId,
@@ -112,20 +93,20 @@ export async function getClassOfferListForDate(
             {
                 $group: {
                     _id: '$student',
-                    latestPresence: { $first: '$$ROOT' },
+                    latestOffer: { $first: '$$ROOT' },
                 },
             },
             {
-                $replaceRoot: { newRoot: '$latestPresence' },
+                $replaceRoot: { newRoot: '$latestOffer' },
             },
         ]);
 
         // Excluir registros duplicados mantendo apenas o mais recente
-        await PresenceModel.deleteMany({
-            _id: { $nin: presentList.map((presence) => presence._id) },
+        await OfferModel.deleteMany({
+            _id: { $nin: offerList.map((offer) => offer._id) },
         });
 
-        return res.status(200).json({ data: { count: presentList.length, presentList } });
+        return res.status(200).json({ data: { count: offerList.length, offerList } });
 
     } catch (error) {
         return res.status(404).send(`<h1>Erro ao salvar a presença</h1> <p>${error}</p>`);

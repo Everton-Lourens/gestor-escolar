@@ -43,6 +43,9 @@ export function useColumns({
       field: 'acoes',
       type: 'actions',
       cellRenderer: (params: CellFunctionParams<Subject>) => {
+        /*
+DAQUI VEM O ID DA TURMA
+        */
         return (
           <div className={style.actionButtonsContainer}>
             <button
