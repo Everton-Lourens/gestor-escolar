@@ -38,6 +38,7 @@ export function ModalAddStudents({
     event.preventDefault()
     setLoadingForm(true)
 
+
     const selectedStudentsIdsToAdd = otherStudents
       .filter((student) => student?.checked)
       .map((student) => student._id)
@@ -108,11 +109,11 @@ export function ModalAddStudents({
   }
 
   function getStudents() {
+
     setLoadingGetStudents(true)
     studentsService
       .getAll()
       .then((res) => {
-        console.log('================, \n' );
         separateStudents(res.data.items)
       })
       .catch((err) => {
@@ -132,6 +133,7 @@ export function ModalAddStudents({
       const studentInserted = subjectData?.students?.includes(student?._id)
 
       if (studentInserted) {
+        student.subject = subjectData;
         _registeredStudents.push(student)
       } else {
         _otherStudents.push(student)

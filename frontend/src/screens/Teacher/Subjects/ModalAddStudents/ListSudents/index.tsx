@@ -11,7 +11,8 @@ import style from './ListMobile.module.scss'
 import { EmptyItems } from '../../../../../components/EmptyItems'
 import { Student } from '..';
 import http from '../../../../../api/http';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AlertContext } from '../../../../../contexts/alertContext'
 
 type Props = {
   students: any[]
@@ -30,19 +31,23 @@ export function ListStudent({
   emptyText,
 }: Props) {
   const [buttonConfigs, setButtonConfigs] = useState<{ [key: string]: { text: string; color: string } }>({});
+  const { alertNotifyConfigs, setAlertNotifyConfigs } = useContext(AlertContext)
 
   const handleButtonClick = async (item: { _id: any }) => {
-  // TRABALHANDO1
+    // TRABALHANDO1
+
+    if (!item['subject']) {
+      setAlertNotifyConfigs({
+        ...alertNotifyConfigs,
+        open: true,
+        type: 'error',
+        text: 'Aluno não é da turma',
+      })
+      return
+    }
+
 
     const currentConfig = buttonConfigs[item._id] || { text: 'FALTA', color: 'secondary' };
-
-    setButtonConfigs((prevConfigs) => ({
-      ...prevConfigs,
-      [item._id]: {
-        text: currentConfig.text.includes('FALTA') ? 'PRESENTE' : 'FALTA',
-        color: currentConfig.text.includes('FALTA') ? 'primary' : 'secondary', // ou qualquer outra cor desejada
-      },
-    }));
 
     let callList = false;
     if (currentConfig.text.includes('FALTA')) // CLICOU EM PRESENÇA?? QUER MARCAR FALTA E VICE VERSA!
@@ -50,10 +55,17 @@ export function ListStudent({
 
     item.presence = callList;
 
-    console.log(item.presence);
-    console.log(item);
+    try {
+      await http.post(`/presence`, { user: item });
 
-    await http.post(`/presence`, { user: item});
+      setButtonConfigs((prevConfigs) => ({
+        ...prevConfigs,
+        [item._id]: {
+          text: currentConfig.text.includes('FALTA') ? 'PRESENTE' : 'FALTA',
+          color: currentConfig.text.includes('FALTA') ? 'primary' : 'secondary', // ou qualquer outra cor desejada
+        },
+      }));
+    } catch (e) { }
   };
 
 

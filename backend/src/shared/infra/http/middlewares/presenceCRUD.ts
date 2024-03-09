@@ -41,7 +41,9 @@ export async function sendPresence(
         /////////////////////////
         */
 
-        const { _id, name, teacher, presence } = req.body.user;
+        const { _id, name, teacher, presence, subject } = req.body.user;
+        const subjectId = subject._id;
+        const subjectName = subject.name;
 
         // Criando uma nova instância do modelo PresenceModel com as propriedades extraídas.
         const newPresence = new PresenceModel({
@@ -49,6 +51,8 @@ export async function sendPresence(
             teacher,
             student: _id,
             nameStudent: name,
+            subject: subjectId,
+            subjectName,
         })
 
         // Salvando a nova instância no banco de dados.

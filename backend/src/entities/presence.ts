@@ -2,24 +2,26 @@ import mongoose, { Types } from 'mongoose'
 
 export interface Presence {
   _id: Types.ObjectId
+  subjectName: string
+  nameStudent: string
   presence: boolean
   teacher: Types.ObjectId
   student: Types.ObjectId
-  nameStudent: string
+  subject: Types.ObjectId
   createdAt: Date
 }
 
 const presenceSchema = new mongoose.Schema({
+  subjectName: { type: String, default: null },
+  nameStudent: { type: String, default: null },
   presence: { type: Boolean, default: false, },
   teacher: { type: 'ObjectId', ref: 'User', default: null },
   student: { type: 'ObjectId', ref: 'Student', default: null },
-  nameStudent: { type: String, default: null },
+  subject: { type: 'ObjectId', ref: 'Subject', default: null },
   createdAt: { type: Date, default: Date.now },
 })
 
 export const PresenceModel = mongoose.model<Presence>('Presence', presenceSchema)
-
-
 
 
 /*
