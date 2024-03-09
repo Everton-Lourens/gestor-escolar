@@ -1,4 +1,6 @@
 import style from './MenuSelectList.module.scss'
+import { AlertContext } from '../../../../../contexts/alertContext'
+import { useContext } from 'react';
 
 type Props = {
   menuSelected: string
@@ -6,6 +8,8 @@ type Props = {
 }
 
 export function MenuSelectList({ menuSelected, setMenuSelected }: Props) {
+  const { alertNotifyConfigs, setAlertNotifyConfigs } = useContext(AlertContext)
+
   return (
     <nav className={style.menuContainer}>
       <button
@@ -21,12 +25,18 @@ export function MenuSelectList({ menuSelected, setMenuSelected }: Props) {
       <button
         onClick={() => {
           setMenuSelected('other')
+          setAlertNotifyConfigs({
+            ...alertNotifyConfigs,
+            open: true,
+            type: 'error',
+            text: 'Reiniciando lista de chamada',
+          });
         }}
         disabled={menuSelected === 'other'}
         className={style.other}
         type="button"
       >
-        Todos os alunos
+        Adicionar alunos
       </button>
     </nav>
   )

@@ -42,10 +42,19 @@ export function ListStudent({
         open: true,
         type: 'error',
         text: 'Aluno não é da turma',
-      })
+      });
       return
     }
-
+    /*
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    COLOCAR NOTIFICAÇÃO PARA QUANDO SALVAR A PRESENÇA OU FALTA E
+    INFORMAR QUE FOI COM SUCESSO (EXEMPLO ACIMA)
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    */
 
     const currentConfig = buttonConfigs[item._id] || { text: 'FALTA', color: 'secondary' };
 
@@ -58,13 +67,21 @@ export function ListStudent({
     try {
       await http.post(`/presence`, { user: item });
 
+      const isPrecence = currentConfig.text.includes('PRESENTE');
+
       setButtonConfigs((prevConfigs) => ({
         ...prevConfigs,
         [item._id]: {
-          text: currentConfig.text.includes('FALTA') ? 'PRESENTE' : 'FALTA',
-          color: currentConfig.text.includes('FALTA') ? 'primary' : 'secondary', // ou qualquer outra cor desejada
+          text: isPrecence ? 'FALTA' : 'PRESENTE',
+          color: isPrecence ? 'secondary' : 'primary', // ou qualquer outra cor desejada
         },
       }));
+      setAlertNotifyConfigs({
+        ...alertNotifyConfigs,
+        open: true,
+        type: 'success',
+        text: 'Salvo',
+      })
     } catch (e) { }
   };
 
@@ -104,6 +121,7 @@ export function ListStudent({
                   variant="contained"
                   color={buttonConfig.color}
                   size="small"
+                  style={{ visibility: !item['subject'] ? 'hidden' : 'visible' }}
                   onClick={() => {
                     handleButtonClick(item)
                   }}

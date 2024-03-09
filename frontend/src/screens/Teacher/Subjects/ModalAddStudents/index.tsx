@@ -189,7 +189,7 @@ export function ModalAddStudents({
       handleClose={handleClose}
       onSubmit={getSubmitFunction()}
       title={
-        (menuSelected === 'included' ? `ALUNOS DA TURMA (${subjectData.name})` : `TODOS OS ALUNOS`)
+        (menuSelected === 'included' ? `LISTA DE CHAMADA (${subjectData.name})` : `TODOS OS ALUNOS`)
 
         /* NÃO MOSTRA MAIS A DATA AO LADO DO TITULO
         (menuSelected === 'included' ? 'ALUNOS DESTA TURMA' : 'TODOS OS ALUNOS') +
