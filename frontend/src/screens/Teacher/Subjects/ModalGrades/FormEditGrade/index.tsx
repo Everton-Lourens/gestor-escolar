@@ -23,7 +23,7 @@ export function FormEditGrade({
       </button>
 
       <CustomTextField
-        label="Oferta total"
+        label="Total em ofertas"
         value={gradeToEditData.firstGrade}
         disabled
         onChange={(event) => {

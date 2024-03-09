@@ -158,7 +158,7 @@ export function ModalGrades({ open, handleClose, subjectData }: Props) {
     <ModalLayout
       open={open}
       handleClose={handleClose}
-      title="Oferta da turma"
+      title={`Ofertas da turma (${subjectData.name})`}
       submitButtonText={editGradeMode ? 'Confirmar' : ''}
       onSubmit={editGradeMode ? onUpdateGrades : undefined}
       loading={loadingUpdateGrades}

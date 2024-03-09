@@ -1,6 +1,6 @@
 import {
-  faClipboard,
   faGraduationCap,
+  faDollarSign,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import { Subject } from '..'
@@ -65,7 +65,7 @@ DAQUI VEM O ID DA TURMA
               className={style.showGradesButton}
               type="button"
             >
-              <FontAwesomeIcon icon={faClipboard} className={style.icon} />
+              <FontAwesomeIcon icon={faDollarSign} className={style.icon} />
             </button>
 
             <button
