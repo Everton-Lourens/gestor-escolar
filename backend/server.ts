@@ -8,7 +8,7 @@ import './src/shared/containers'
 import { Mongoose } from 'mongoose'
 import { handleError } from './src/shared/infra/http/middlewares/handleError'
 import { sendPresence, getPresenceListForDate } from './src/shared/infra/http/middlewares/presenceCRUD';
-import { sendClassOffer, getClassOfferListForDate } from './src/shared/infra/http/middlewares/[EBD-CRIANDO]classOfferCRUD';
+import { sendClassOffer, getClassOfferListForDate } from './src/shared/infra/http/middlewares/classOfferCRUD';
 
 interface CustomExpress extends Express {
   mongo?: Mongoose
