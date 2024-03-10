@@ -12,6 +12,8 @@ export async function sendPresence(
 ) {
     try { // TRABALHANDO3 (SAVE)
 
+        console.log('KKKKKKKKKKKKKKKKKKKKKK');
+
         // Verificando se a requisição, o corpo da requisição ou o usuário no corpo da requisição são nulos ou inválidos
         if (!req || !req.body || !req.body.user)
             return res.status(400).send(`<h1>Corpo da requisição ausente ou inválido</h1> <p>- req: ${!!req}<br>- body: ${!!req?.body}<br>- user: ${!!req.body.user}</p>`);

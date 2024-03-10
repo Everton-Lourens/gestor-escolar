@@ -76,7 +76,7 @@
         color: $white-color;
 
         &::after {
-          content: "Inserir alunos";
+          content: "Alunos";
         }
       }
       &.showGradesButton {
@@ -92,7 +92,7 @@
         color: $white-color;
 
         &::after {
-          content: "Deletar turma";
+          content: "Deletar Turma";
         }
       }
     }
