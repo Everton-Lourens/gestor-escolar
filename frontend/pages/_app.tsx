@@ -16,7 +16,7 @@ export interface PageProps {
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
-  const [title, setTitle] = useState<string>('Gestor escolar')
+  const [title, setTitle] = useState<string>('Gestor Escolar - EBD')
   const [showBackButton, setShowBackButton] = useState<boolean>(false)
   const restrictLayout =
     router.route !== '/login' && router.route !== '/createAccount'
@@ -24,7 +24,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AlertContextComponent>
       <Head>
-        <title>{title || 'Gestor escolar'}</title>
+        <title>{title || 'Gestor Escolar - EBD'}</title>
         <link rel="shortcut icon" href="./favicon.ico" />
       </Head>
 

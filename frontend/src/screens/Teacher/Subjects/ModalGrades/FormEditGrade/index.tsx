@@ -2,7 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Grade } from '..'
 import { CustomTextField } from '../../../../../components/CustomTextField'
 import style from './FormEditGrade.module.scss'
-import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
+import { useState } from 'react';
+import { faAngleLeft, faPen } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {
   gradeToEditData: Grade
@@ -15,6 +16,9 @@ export function FormEditGrade({
   gradeToEditData,
   setGradeToEditData,
 }: Props) {
+
+  const [disabledTotal, setDisabledTotal] = useState(true);
+
   return (
     <div className={style.inputsContainer}>
       <button onClick={handleBack} className={style.backButton} type="button">
@@ -22,24 +26,29 @@ export function FormEditGrade({
         Voltar
       </button>
 
+      <button onClick={() => setDisabledTotal(!disabledTotal)} className={style.backButton} type="button">
+        <FontAwesomeIcon className={style.icon} icon={faPen} />
+        Editar Total
+      </button>
+
       <CustomTextField
-        label="Total em ofertas"
+        label="Total"
         value={gradeToEditData.firstGrade}
-        disabled
+        disabled={disabledTotal}
         onChange={(event) => {
           setGradeToEditData({
             ...gradeToEditData,
-            firstGrade: parseFloat(event.target.value),
+            firstGrade: parseFloat(event.target.value) || 0,
           })
         }}
       />
       <CustomTextField
-        label="Adicionar oferta"
+        label="Adicionar Oferta"
         value={gradeToEditData.secondGrade}
         onChange={(event) => {
           setGradeToEditData({
             ...gradeToEditData,
-            secondGrade: parseFloat(event.target.value),
+            secondGrade: parseFloat(event.target.value) || 0,
           })
         }}
       />

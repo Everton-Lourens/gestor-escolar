@@ -34,7 +34,7 @@ export function HeaderMenu({ title, showBackButton }: Props) {
           Voltar
         </button>
       ) : (
-        <h2>{title || 'Gestor escolar'}</h2>
+        <h2>{title || 'Gestor Escolar - EBD'}</h2>
       )}
       <button className={style.logoutButton} onClick={logout} type="button">
         <FontAwesomeIcon className={style.icon} icon={faRightFromBracket} />
