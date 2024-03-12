@@ -23,8 +23,8 @@ interface RemoveStudentsParams {
 }
 
 export const reportsService = {
-  getAll() {
-    return http.get('/class-offer?viewAll=true');
+  getAll(date: string) {
+    return http.get(`/report?date=${date}`); /////// ARRUMAR
   },
 
   create({ newReportData }: CreateParams) {

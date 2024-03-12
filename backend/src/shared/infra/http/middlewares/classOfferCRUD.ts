@@ -166,7 +166,7 @@ export async function getAllClassOffer(
         }
 
         // Buscando ofertas e dizimos onde os dois não podem ser igualmente 0.
-        const offerList: IOffer[] = await OfferModel.find({}); 
+        const offerList: IOffer[] = await OfferModel.find({});
 
         return res.status(200).json({
             success: true,
@@ -180,7 +180,7 @@ export async function getAllClassOffer(
 }
 
 
-export async function getClassOfferListByDate(
+export async function getClassOfferListByDateOrTeacherId(
     req: Request,
     res: Response,
     next: NextFunction
@@ -192,12 +192,15 @@ export async function getClassOfferListByDate(
         // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
         // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
 
+        if (!req.query['date']) {
+            return res.status(400).json({
+                success: false,
+                message: 'Informe a data da consulta',
+                items: [],
+            });
+        }
 
-        // Extrai o ID do professor a partir dos parâmetros da requisição.
-        const teacherId = req.params.teacherId;
 
-        if (!teacherId || !req.query['date'])
-            return res.status(400).send(`<h1>ID do professor ou data ausente</h1>`)
 
         // Extrai a data da consulta da query da requisição e converte para um objeto Date
         const dateQueryParam: string = req.query.date as string; // Ajuste o tipo conforme necessário
@@ -205,53 +208,93 @@ export async function getClassOfferListByDate(
 
         // Verifica se a data é válida
         if (isNaN(dateFilter.getTime())) {
-            return res.status(400).json({ mensagem: 'Formato de data inválido' });
+            return res.status(400).json({
+                success: false,
+                message: 'Formato de data inválido',
+                items: [],
+            });
         }
 
-        // Converte o ID do professor para um ObjectId do mongoose.
-        const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
+        const getClassOfferList = async () => {
+            // Extrai o ID do professor a partir dos parâmetros da requisição.
+            const teacherId = req?.query?.teacherId || null;
 
+            if (!!teacherId) {
+                // Converte o ID do professor para um ObjectId do mongoose.
+                const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
 
-        const offerList: IOffer[] = await OfferModel.aggregate([
-            {
-                $match: {
-                    teacher: teacherObjectId,
-                    createdAt: {
-                        $gte: dateFilter,
-                        $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                return await OfferModel.aggregate([
+                    {
+                        $match: {
+                            teacher: teacherObjectId,
+                            createdAt: {
+                                $gte: dateFilter,
+                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                            },
+                        },
                     },
-                },
-            },
-            {
-                $sort: {
-                    student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                    createdAt: -1, // Classifica por data de criação em ordem decrescente
-                },
-            },
-            {
-                $group: {
-                    _id: '$student',
-                    latestOffer: { $first: '$$ROOT' },
-                },
-            },
-            {
-                $replaceRoot: { newRoot: '$latestOffer' },
-            },
-        ]);
+                    {
+                        $sort: {
+                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
+                            createdAt: -1, // Classifica por data de criação em ordem decrescente
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$student',
+                            latestOffer: { $first: '$$ROOT' },
+                        },
+                    },
+                    {
+                        $replaceRoot: { newRoot: '$latestOffer' },
+                    },
+                ]);
+            } else {
+                return await OfferModel.aggregate([
+                    {
+                        $match: {
+                            createdAt: {
+                                $gte: dateFilter,
+                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                            },
+                        },
+                    },
+                    {
+                        $sort: {
+                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
+                            createdAt: -1, // Classifica por data de criação em ordem decrescente
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$student',
+                            latestOffer: { $first: '$$ROOT' },
+                        },
+                    },
+                    {
+                        $replaceRoot: { newRoot: '$latestOffer' },
+                    },
+                ]);
+            }
+        }
 
-        // Excluir registros duplicados mantendo apenas o mais recente
-        await OfferModel.deleteMany({
-            _id: { $nin: offerList.map((offer) => offer._id) },
-        });
+        // Executa a função classOfferList assíncrona para obter a lista de ofertas
+        const classOfferList = await getClassOfferList();
 
-        return res.status(200).json({
+        const sucess = (classOfferList || classOfferList.length > 0) ? true : false;
+
+        return res.status(sucess ? 200 : 400).json({
             success: true,
-            message: 'Busca do relatório concluído com sucesso',
-            items: offerList,
+            message: sucess ? 'Busca do relatório concluído com sucesso' : 'Busca do relatório falhou',
+            items: classOfferList || [],
         })
 
     } catch (error) {
-        return res.status(404).send(`<h1>Erro ao salvar a presença</h1> <p>${error}</p>`);
+        return res.status(404).json({
+            success: false,
+            message: `Erro ao buscar ofertas das turma pela data: "${error}"`,
+            items: [],
+        });
     }
 }
 

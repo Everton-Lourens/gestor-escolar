@@ -11,17 +11,15 @@ import { ListMobile } from '../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
 import { ModalGrades } from './ModalGrades'
 
-export interface Report {
-  data: ReportData;
-}
-/*
+
 export interface Report {
   _id: string
   name: string
-  students: string[]
+  reports: string[]
 }
-*/
+
 export function Reports() {
+  const [listByDate, setListByDate] = useState('');
   const {
     alertDialogConfirmConfigs,
     setAlertDialogConfirmConfigs,
@@ -39,9 +37,10 @@ export function Reports() {
   const [formModalOpened, setFormModalOpened] = useState<boolean>(false)
 
   function getReports() {
-    setLoadingReports(true)
+    setLoadingReports(true);
+
     reportsService
-      .getAll()
+      .getAll('2024/03/12')
       .then((res) => {
         setReports(res.data.items)
       })

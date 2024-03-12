@@ -170,3 +170,122 @@ export async function getAllPresence(
         return res.status(404).send(`<h1>Erro ao buscar todas as presenças</h1> <p>${error}</p>`);
     }
 }
+
+
+export async function getPresenceListByDateOrSubjectId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+
+        // TRABALHANDO5 (GET)
+
+        // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
+        // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
+
+        if (!req.query['date']) {
+            return res.status(400).json({
+                success: false,
+                message: 'Informe a data da consulta',
+                items: [],
+            });
+        }
+
+        // Extrai a data da consulta da query da requisição e converte para um objeto Date
+        const dateQueryParam: string = req.query.date as string; // Ajuste o tipo conforme necessário
+        const dateFilter = new Date(dateQueryParam);
+
+        // Verifica se a data é válida
+        if (isNaN(dateFilter.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Formato de data inválido',
+                items: [],
+            });
+        }
+
+        // Extrai o ID do professor a partir dos parâmetros da requisição.
+        const teacherId = req?.query?.teacherId;
+
+        // Verifica se teacherId está definido antes de criar o ObjectId
+        const teacherObjectId = teacherId ? new mongoose.Types.ObjectId(teacherId) : null;
+
+
+        const getPresenceList = async () => {
+
+            if (!!teacherObjectId) {
+                return await OfferModel.aggregate([
+                    {
+                        $match: {
+                            teacher: teacherObjectId,
+                            createdAt: {
+                                $gte: dateFilter,
+                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                            },
+                        },
+                    },
+                    {
+                        $sort: {
+                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
+                            createdAt: -1, // Classifica por data de criação em ordem decrescente
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$student',
+                            latestOffer: { $first: '$$ROOT' },
+                        },
+                    },
+                    {
+                        $replaceRoot: { newRoot: '$latestOffer' },
+                    },
+                ]);
+            } else {
+                return await OfferModel.aggregate([
+                    {
+                        $match: {
+                            createdAt: {
+                                $gte: dateFilter,
+                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                            },
+                        },
+                    },
+                    {
+                        $sort: {
+                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
+                            createdAt: -1, // Classifica por data de criação em ordem decrescente
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$student',
+                            latestOffer: { $first: '$$ROOT' },
+                        },
+                    },
+                    {
+                        $replaceRoot: { newRoot: '$latestOffer' },
+                    },
+                ]);
+            }
+        }
+
+        // Executa a função classOfferList assíncrona para obter a lista de ofertas
+        const classOfferList = await getPresenceList();
+
+        const sucess = (classOfferList || classOfferList.length > 0) ? true : false;
+
+        return res.status(sucess ? 200 : 400).json({
+            success: true,
+            message: sucess ? 'Busca do relatório concluído com sucesso' : 'Busca do relatório falhou',
+            items: classOfferList || [],
+        })
+
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: `Erro ao buscar ofertas das turma pela data: "${error}"`,
+            items: [],
+        });
+    }
+}
