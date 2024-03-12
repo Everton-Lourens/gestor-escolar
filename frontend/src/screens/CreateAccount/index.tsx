@@ -141,3 +141,10 @@ export function CreateAccount() {
     </div>
   )
 }
+
+
+/*
+import { useRouter } from 'next/router'
+const router = useRouter()
+router.push('/login')
+*/

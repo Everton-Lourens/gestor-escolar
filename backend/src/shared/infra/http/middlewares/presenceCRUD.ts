@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { PresenceModel } from '../../../../entities/presence'
 import mongoose, { Types } from 'mongoose'
+import { DynamoDBStreams } from 'aws-sdk';
 
 // Middleware para enviar dados para o mongo
 
@@ -12,7 +13,14 @@ export async function sendPresence(
 ) {
     try { // TRABALHANDO3 (SAVE)
 
-        console.log('KKKKKKKKKKKKKKKKKKKKKK');
+        /*
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        QUANDO EU ADICIONO A PRESENÇA, NÃO VAI DE PRIMEIRA PARA O BANCO DE DADOS....
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        */
+
 
         // Verificando se a requisição, o corpo da requisição ou o usuário no corpo da requisição são nulos ou inválidos
         if (!req || !req.body || !req.body.user)
@@ -68,7 +76,7 @@ export async function sendPresence(
 }
 
 
-export async function getPresenceListForDate(
+export async function getPresenceListByDate(
     req: Request,
     res: Response,
     next: NextFunction
@@ -136,5 +144,29 @@ export async function getPresenceListForDate(
 
     } catch (error) {
         return res.status(404).send(`<h1>Erro ao salvar a presença</h1> <p>${error}</p>`);
+    }
+}
+
+
+
+export async function getAllPresence(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        const viewAll = req.query.viewAll;
+
+        if (viewAll !== 'true') {
+            return res.status(400).send(`<h1>Consulta inválida</h1>`);
+        }
+
+        // Buscando ofertas e dizimos onde os dois não podem ser igualmente 0.
+        const offerList: IOffer[] = await PresenceModel.find({});
+
+        return res.status(200).json({ data: { count: offerList.length, offerList } });
+
+    } catch (error) {
+        return res.status(404).send(`<h1>Erro ao buscar todas as presenças</h1> <p>${error}</p>`);
     }
 }

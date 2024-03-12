@@ -1,6 +1,6 @@
 import { ModalLayout } from '../../../../components/ModalLayout'
 import { useState, useEffect, FormEvent, useContext } from 'react'
-import { Subject } from '..'
+import { Report } from '..'
 import { gradesService } from '../../../../services/gradesService'
 import { ListMobile } from '../../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
@@ -12,7 +12,7 @@ import { AlertContext } from '../../../../contexts/alertContext'
 import http from '../../../../api/http';
 
 interface Props {
-  subjectData: Subject
+  reportData: Report
   open: boolean
   handleClose: () => void
 }
@@ -24,12 +24,12 @@ export interface Grade {
   student: {
     name: string
   }
-  subject: {
+  report: {
     name: string
   }
 }
 
-export function ModalGrades({ open, handleClose, subjectData }: Props) {
+export function ModalGrades({ open, handleClose, reportData }: Props) {
   const { alertNotifyConfigs, setAlertNotifyConfigs } = useContext(AlertContext)
 
   const [loadingGetGrades, setLoadingGetGrades] = useState<boolean>(true)
@@ -42,7 +42,7 @@ export function ModalGrades({ open, handleClose, subjectData }: Props) {
     // BUSCAR VALORES ANTIGOS
     setLoadingGetGrades(true)
     gradesService
-      .getAll(subjectData._id)
+      .getAll(reportData._id)
       .then((res) => {
         setGrades(res.data.items)
       })
@@ -85,7 +85,7 @@ export function ModalGrades({ open, handleClose, subjectData }: Props) {
             "createdAt": "2024-03-04T21:50:22.772Z",
             "__v": 0
         },
-        "subject": {
+        "report": {
             "_id": "65eb74468b29e359dfd4860a",
             "code": "1",
             "name": "Jovens",
@@ -115,8 +115,8 @@ export function ModalGrades({ open, handleClose, subjectData }: Props) {
 
     // Adicionando código IMPROVISADO para salvar a nova como se fosse o dinheiro
     const newGradeToEditData = { ...gradeToEditData }
-    newGradeToEditData.subject.tithing = newGradeToEditData.firstGrade;
-    newGradeToEditData.subject.offer = newGradeToEditData.secondGrade;
+    newGradeToEditData.report.tithing = newGradeToEditData.firstGrade;
+    newGradeToEditData.report.offer = newGradeToEditData.secondGrade;
     newGradeToEditData.firstGrade = 0;
     newGradeToEditData.secondGrade = 0;
 
@@ -160,7 +160,7 @@ export function ModalGrades({ open, handleClose, subjectData }: Props) {
     <ModalLayout
       open={open}
       handleClose={handleClose}
-      title={`Adicionar Ofertas (${subjectData.name})`}
+      title={`Adicionar Ofertas (${reportData.name})`}
       submitButtonText={editGradeMode ? 'Confirmar' : ''}
       onSubmit={editGradeMode ? onUpdateGrades : undefined}
       loading={loadingUpdateGrades}

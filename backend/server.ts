@@ -7,8 +7,8 @@ import { routes } from './src/shared/infra/http/routes'
 import './src/shared/containers'
 import { Mongoose } from 'mongoose'
 import { handleError } from './src/shared/infra/http/middlewares/handleError'
-import { sendPresence, getPresenceListForDate } from './src/shared/infra/http/middlewares/presenceCRUD';
-import { sendClassOffer, getClassOfferListForDate } from './src/shared/infra/http/middlewares/classOfferCRUD';
+import { sendPresence, getPresenceListByDate } from './src/shared/infra/http/middlewares/presenceCRUD';
+import { sendClassOffer, getClassOfferListByDate, getClassOffer } from './src/shared/infra/http/middlewares/classOfferCRUD';
 
 interface CustomExpress extends Express {
   mongo?: Mongoose
@@ -39,11 +39,16 @@ app.post('/presence', sendPresence, async (req: Request, res: Response) => {
 })
 
 
-app.get('/presence/:teacherId', getPresenceListForDate, async (req: Request, res: Response) => {
+app.get('/presence/:teacherId', getPresenceListByDate, async (req: Request, res: Response) => {
     // TRABALHANDO4
 // middleware
 })
 
+
+app.get('/class-offer', getClassOffer, async (req: Request, res: Response) => {
+    // TRABALHANDO4
+// middleware
+})
 
 app.post('/class-offer', sendClassOffer, async (req: Request, res: Response) => {
   // TRABALHANDO2
@@ -52,7 +57,7 @@ app.post('/class-offer', sendClassOffer, async (req: Request, res: Response) => 
 })
 
 
-app.get('/class-offer/:teacherId', getClassOfferListForDate, async (req: Request, res: Response) => {
+app.get('/class-offer/:teacherId', getClassOfferListByDate, async (req: Request, res: Response) => {
     // TRABALHANDO4
 // middleware
 })

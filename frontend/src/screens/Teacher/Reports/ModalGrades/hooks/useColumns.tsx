@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Grade } from '..'
 import { CellFunctionParams } from '../../../../../components/TableComponent/interfaces'
 import style from '../ModalGrades.module.scss'
-import { faPlus, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faEye } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react';
 
 type Props = {
@@ -52,7 +52,7 @@ export function useColumns({ handleEditGrades }: Props) {
         "createdAt": "2024-03-05T15:38:56.030Z",
         "__v": 0
     },
-    "subject": {
+    "report": {
         "_id": "65eb74468b29e359dfd4860a",
         "code": "1",
         "name": "Jovens",
@@ -78,7 +78,7 @@ export function useColumns({ handleEditGrades }: Props) {
           <div className={style.actionButtonsContainer}>
             <button
               onClick={() => {
-                window.location.href = '/report?user=' + params.data.student._id;
+                window.location.href = '/teacher/report/' + params.data.student._id;
               }}
               className={style.editGradesButton}
               type="button"
