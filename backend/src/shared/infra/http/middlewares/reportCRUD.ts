@@ -193,16 +193,27 @@ export async function getReportByDateOrTeacherId(
         // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
         // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
 
-        if (!req.query['date']) {
-            return res.status(400).json({
-                success: false,
-                message: 'Informe a data da consulta',
-                items: [],
-            });
+
+        if (!req.query['startDate']) {
+            req.query.startDate = new Date().toISOString();
         }
 
+        console.log('77777777777777777777');
+                console.log(req.query.startDate);
+        console.log('77777777777777777777');
+        /*
+TÁ VINDO NULL
+        77777777777777777777
+null
+77777777777777777777
+77777777777777777777
+null
+77777777777777777777
+*/
+
+
         // Extrai a data da consulta da query da requisição e converte para um objeto Date
-        const dateQueryParam: string = req.query.date as string; // Ajuste o tipo conforme necessário
+        const dateQueryParam: string = req.query.startDate as string; // Ajuste o tipo conforme necessário
         const dateFilter = new Date(dateQueryParam);
 
         // Verifica se a data é válida

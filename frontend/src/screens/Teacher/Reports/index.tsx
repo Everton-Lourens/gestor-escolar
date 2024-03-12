@@ -1,5 +1,5 @@
 import { reportsService } from '../../../services/reportsService'
-import { HeaderPage } from '../../../components/HeaderPage'
+import { HeaderPageReport } from '../../../components/HeaderPage'
 import { useContext, useEffect, useState } from 'react'
 import { ModalCreateNewReport } from './ModalCreateNewReport'
 import { TableComponent } from '../../../components/TableComponent'
@@ -10,6 +10,8 @@ import style from './Reports.module.scss'
 import { ListMobile } from '../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
 import { ModalGrades } from './ModalGrades'
+import { FilterDate } from '../../../components/FilterDate'
+import { useRouter } from 'next/router'
 
 
 export interface Report {
@@ -19,7 +21,14 @@ export interface Report {
 }
 
 export function Reports() {
-  const [listByDate, setListByDate] = useState('');
+  const router = useRouter();
+
+  function getDateQuery() {
+    const startDate = router?.query?.startDate || null;
+    const endDate = router?.query?.endDate || null;
+    return `startDate=${startDate || null}&endDate=${endDate || null}`;
+  }
+
   const {
     alertDialogConfirmConfigs,
     setAlertDialogConfirmConfigs,
@@ -40,7 +49,7 @@ export function Reports() {
     setLoadingReports(true);
 
     reportsService
-      .getAll('2024/03/12')
+      .getAll(getDateQuery())
       .then((res) => {
         setReports(res.data.items)
       })
@@ -106,13 +115,12 @@ export function Reports() {
 
   return (
     <>
-      <HeaderPage
-        buttonText="Nova turma"
-        InputFilter={<h3>Turmas - {new Date().toLocaleDateString('pt-BR')}</h3>}
-        onClickFunction={() => {
-          setFormModalOpened(true)
-        }}
+      <HeaderPageReport
+        InputFilter={<h3>Relatório - {new Date().toLocaleDateString('pt-BR')}</h3>}
       />
+
+      <FilterDate />
+      <br />
 
       <div className={style.viewDesktop}>
         <TableComponent

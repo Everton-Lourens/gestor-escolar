@@ -26,3 +26,15 @@ export function HeaderPage({
     </header>
   )
 }
+
+
+export function HeaderPageReport({ InputFilter }: { InputFilter: JSX.Element }) {
+  return (
+    <header className={style.headerContainer}>
+      {InputFilter}
+      <div className={style.buttonsContainer}>
+      </div>
+    </header>
+  );
+}
+
