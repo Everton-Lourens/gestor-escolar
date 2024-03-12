@@ -1,16 +1,9 @@
-// MeuComponente.tsx
-import React from 'react';
+import { Login } from '../src/screens/Login'
 
-interface Props {
-  nome: string;
-}
-
-const MeuComponente: React.FC<Props> = ({ nome }) => {
+export default function LoginPage() {
   return (
-    <div>
-      <p>Olá, {nome}!</p>
-    </div>
-  );
-};
-
-export default MeuComponente;
+    <>
+      <Login />
+    </>
+  )
+}
