@@ -232,65 +232,47 @@ export async function getClassOfferList(
             items: [],
         });
     }
-
-    // Extrai o ID do professor a partir dos parâmetros da requisição.
-    const teacherId = req?.query?.teacherId || null;
-
-    if (!!teacherId) {
-        // Converte o ID do professor para um ObjectId do mongoose.
-        const teacherObjectId = new mongoose.Types.ObjectId(teacherId as string);
-
-        return await OfferModel.aggregate([
-            {
-                $match: {
-                    teacher: teacherObjectId,
-                    createdAt: {
-                        $gte: startDate,
-                        $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
-                    },
-                },
-            },
-            {
-                $sort: {
-                    student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                    createdAt: -1, // Classifica por data de criação em ordem decrescente
-                },
-            },
-            {
-                $group: {
-                    _id: '$student',
-                    latestOffer: { $first: '$$ROOT' },
-                },
-            },
-            {
-                $replaceRoot: { newRoot: '$latestOffer' },
-            },
-        ]);
-    } else {
+    try {
+        //@@@@@@@@@@@@@@@@@@ aqui eu tenho que remontar todos os JSONs depois da busca,
         return await OfferModel.aggregate([
             {
                 $match: {
                     createdAt: {
-                        $gte: startDate,
-                        $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
-                    },
-                },
+                        $gte: new Date(startDate), // Data maior ou igual a startDate
+                        $lte: new Date(endDate)    // Data menor ou igual a endDate
+                    }
+                }
             },
             {
-                $sort: {
-                    student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                    createdAt: -1, // Classifica por data de criação em ordem decrescente
-                },
+                $lookup: {
+                    from: 'subjects', // Nome da coleção a ser populada
+                    localField: 'subject',
+                    foreignField: '_id',
+                    as: 'subject'
+                }
             },
             {
-                $group: {
-                    _id: '$student',
-                    latestOffer: { $first: '$$ROOT' },
-                },
+                $lookup: {
+                    from: 'users', // Nome da coleção a ser populada
+                    localField: 'teacher',
+                    foreignField: '_id',
+                    as: 'teacher'
+                }
             },
             {
-                $replaceRoot: { newRoot: '$latestOffer' },
+                $lookup: {
+                    from: 'users', // Nome da coleção a ser populada
+                    localField: 'student',
+                    foreignField: '_id',
+                    as: 'student'
+                }
             },
-        ]);
+            // Outros $lookup para outras chaves estrangeiras, se necessário
+        ]).exec();
+
+    } catch (error) {
+        console.error('Erro ao buscar ofertas por data:', error);
+        throw error;
     }
+
 }

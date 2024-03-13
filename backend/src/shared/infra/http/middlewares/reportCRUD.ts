@@ -215,9 +215,10 @@ export async function getReportByDateOrTeacherId(
         // Executa a função reportList assíncrona para obter a lista de ofertas
         const reportList = await getReportList();
 
-        console.log('reportList')
-        console.log(reportList)
-        console.log('reportList')
+        console.log('--reportList--')
+       //  console.log(reportList[0].student)
+       console.log(reportList)
+        console.log('--reportList--')
 
         return res.status(200).json({
             success: true,
