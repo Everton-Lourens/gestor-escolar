@@ -198,84 +198,10 @@ export async function getClassOfferListByDateOrTeacherId(
     next: NextFunction,
 ) {
     try {
-
-        // Verifica se a data é válida
-        const { startDate, endDate } = await checkDateQuery(req, res, next);
-        if (!startDate || !endDate) {
-            return res.status(400).json({
-                success: false,
-                message: 'Formato de data inválido',
-                items: [],
-            });
-        }
-
-        const getClassOfferList = async () => {
-            // Extrai o ID do professor a partir dos parâmetros da requisição.
-            const teacherId = req?.query?.teacherId || null;
-
-            if (!!teacherId) {
-                // Converte o ID do professor para um ObjectId do mongoose.
-                const teacherObjectId = new mongoose.Types.ObjectId(teacherId as string);
-
-                return await OfferModel.aggregate([
-                    {
-                        $match: {
-                            teacher: teacherObjectId,
-                            createdAt: {
-                                $gte: startDate,
-                                $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
-                            },
-                        },
-                    },
-                    {
-                        $sort: {
-                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                            createdAt: -1, // Classifica por data de criação em ordem decrescente
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: '$student',
-                            latestOffer: { $first: '$$ROOT' },
-                        },
-                    },
-                    {
-                        $replaceRoot: { newRoot: '$latestOffer' },
-                    },
-                ]);
-            } else {
-                return await OfferModel.aggregate([
-                    {
-                        $match: {
-                            createdAt: {
-                                $gte: startDate,
-                                $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
-                            },
-                        },
-                    },
-                    {
-                        $sort: {
-                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                            createdAt: -1, // Classifica por data de criação em ordem decrescente
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: '$student',
-                            latestOffer: { $first: '$$ROOT' },
-                        },
-                    },
-                    {
-                        $replaceRoot: { newRoot: '$latestOffer' },
-                    },
-                ]);
-            }
-        }
-
         // Executa a função classOfferList assíncrona para obter a lista de ofertas
-        const classOfferList = await getClassOfferList();
+        const classOfferList = await getClassOfferList(req, res, next);
 
-        const sucess = (classOfferList || classOfferList.length > 0) ? true : false;
+        const sucess = (Array.isArray(classOfferList) && classOfferList.length > 0) ? true : false;
 
         return res.status(sucess ? 200 : 400).json({
             success: true,
@@ -292,3 +218,79 @@ export async function getClassOfferListByDateOrTeacherId(
     }
 }
 
+export async function getClassOfferList(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) {
+    // Verifica se a data é válida
+    const { startDate, endDate } = await checkDateQuery(req, res, next);
+    if (!startDate || !endDate) {
+        return res.status(400).json({
+            success: false,
+            message: 'Formato de data inválido',
+            items: [],
+        });
+    }
+
+    // Extrai o ID do professor a partir dos parâmetros da requisição.
+    const teacherId = req?.query?.teacherId || null;
+
+    if (!!teacherId) {
+        // Converte o ID do professor para um ObjectId do mongoose.
+        const teacherObjectId = new mongoose.Types.ObjectId(teacherId as string);
+
+        return await OfferModel.aggregate([
+            {
+                $match: {
+                    teacher: teacherObjectId,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
+                    },
+                },
+            },
+            {
+                $sort: {
+                    student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
+                    createdAt: -1, // Classifica por data de criação em ordem decrescente
+                },
+            },
+            {
+                $group: {
+                    _id: '$student',
+                    latestOffer: { $first: '$$ROOT' },
+                },
+            },
+            {
+                $replaceRoot: { newRoot: '$latestOffer' },
+            },
+        ]);
+    } else {
+        return await OfferModel.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
+                    },
+                },
+            },
+            {
+                $sort: {
+                    student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
+                    createdAt: -1, // Classifica por data de criação em ordem decrescente
+                },
+            },
+            {
+                $group: {
+                    _id: '$student',
+                    latestOffer: { $first: '$$ROOT' },
+                },
+            },
+            {
+                $replaceRoot: { newRoot: '$latestOffer' },
+            },
+        ]);
+    }
+}

@@ -2,8 +2,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
-import { getClassOfferListByDateOrTeacherId } from './classOfferCRUD';
-import { checkDateQuery } from './functions';
+import { getClassOfferList } from './classOfferCRUD';
 
 // Middleware para enviar dados para o mongo
 
@@ -203,8 +202,9 @@ export async function getReportByDateOrTeacherId(
 
         const getReportList = async () => {
             try {
+                return await getClassOfferList(req, res, next);
                 return {
-                    classOffer: await getClassOfferListByDateOrTeacherId(req, res, next),
+                    classOffer: await getClassOfferList(req, res, next),
                 };
             } catch (e) {
                 console.error(e);
@@ -214,6 +214,10 @@ export async function getReportByDateOrTeacherId(
 
         // Executa a função reportList assíncrona para obter a lista de ofertas
         const reportList = await getReportList();
+
+        console.log('reportList')
+        console.log(reportList)
+        console.log('reportList')
 
         return res.status(200).json({
             success: true,
