@@ -2,6 +2,8 @@
 import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
+import { checkDateQuery } from './functions';
+
 
 // Middleware para enviar dados para o mongo
 
@@ -11,6 +13,16 @@ export async function sendClassOffer(
     next: NextFunction
 ) {
     try { // TRABALHANDO3 (SAVE)
+
+        // Verifica se a data é válida
+        const isValidDateQuery = await checkDateQuery(req, res, next);
+        if (!isValidDateQuery) {
+            return res.status(400).json({
+                success: false,
+                message: 'Formato de data inválido',
+                items: [],
+            });
+        }
 
         // Verificando se a requisição, o corpo da requisição ou o usuário no corpo da requisição são nulos ou inválidos
         if (!req || !req.body || !req.body.data)
@@ -124,7 +136,7 @@ export async function getClassOffer(
 export async function getClassOfferById(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ) {
     try {
 
@@ -156,7 +168,7 @@ export async function getClassOfferById(
 export async function getAllClassOffer(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ) {
     try {
         const viewAll = req.query.viewAll;
@@ -183,31 +195,13 @@ export async function getAllClassOffer(
 export async function getClassOfferListByDateOrTeacherId(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) {
     try {
 
-        // TRABALHANDO5 (GET)
-
-        // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
-        // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
-
-        if (!req.query['date']) {
-            return res.status(400).json({
-                success: false,
-                message: 'Informe a data da consulta',
-                items: [],
-            });
-        }
-
-
-
-        // Extrai a data da consulta da query da requisição e converte para um objeto Date
-        const dateQueryParam: string = req.query.date as string; // Ajuste o tipo conforme necessário
-        const dateFilter = new Date(dateQueryParam);
-
         // Verifica se a data é válida
-        if (isNaN(dateFilter.getTime())) {
+        const { startDate, endDate } = await checkDateQuery(req, res, next);
+        if (!startDate || !endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Formato de data inválido',
@@ -221,15 +215,15 @@ export async function getClassOfferListByDateOrTeacherId(
 
             if (!!teacherId) {
                 // Converte o ID do professor para um ObjectId do mongoose.
-                const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
+                const teacherObjectId = new mongoose.Types.ObjectId(teacherId as string);
 
                 return await OfferModel.aggregate([
                     {
                         $match: {
                             teacher: teacherObjectId,
                             createdAt: {
-                                $gte: dateFilter,
-                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                                $gte: startDate,
+                                $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
                             },
                         },
                     },
@@ -254,8 +248,8 @@ export async function getClassOfferListByDateOrTeacherId(
                     {
                         $match: {
                             createdAt: {
-                                $gte: dateFilter,
-                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
+                                $gte: startDate,
+                                $lt: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
                             },
                         },
                     },

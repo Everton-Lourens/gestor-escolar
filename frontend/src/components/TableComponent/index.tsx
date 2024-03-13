@@ -10,7 +10,6 @@ interface Props {
 }
 
 export function TableComponent({ columns, rows, loading, emptyText }: Props) {
-  console.log(rows);
   return (
     <table style={loading ? { opacity: 0.5 } : {}} className={style.table}>
       <thead>

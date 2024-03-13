@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 import { getClassOfferListByDateOrTeacherId } from './classOfferCRUD';
+import { checkDateQuery } from './functions';
 
 // Middleware para enviar dados para o mongo
 
@@ -188,42 +189,17 @@ export async function getReportByDateOrTeacherId(
 ) {
     try {
 
-        // TRABALHANDO5 (GET)
-
-        // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
-        // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
-
-
-        if (!req.query['startDate']) {
-            req.query.startDate = new Date().toISOString();
-        }
-
-        console.log('77777777777777777777');
-                console.log(req.query.startDate);
-        console.log('77777777777777777777');
-        /*
-TÁ VINDO NULL
-        77777777777777777777
-null
-77777777777777777777
-77777777777777777777
-null
-77777777777777777777
-*/
-
-
-        // Extrai a data da consulta da query da requisição e converte para um objeto Date
-        const dateQueryParam: string = req.query.startDate as string; // Ajuste o tipo conforme necessário
-        const dateFilter = new Date(dateQueryParam);
-
+        /* AS OUTRAS CLASSES JÁ FAZEM ISSO
         // Verifica se a data é válida
-        if (isNaN(dateFilter.getTime())) {
+        const { startDate, endDate } = await checkDateQuery(req, res, next);
+        if (!startDate || !endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Formato de data inválido',
                 items: [],
             });
         }
+        */
 
         const getReportList = async () => {
             try {

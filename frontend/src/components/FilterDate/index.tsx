@@ -4,7 +4,11 @@ import { FormEvent, useState } from 'react'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 
-export function FilterDate() {
+type Props = {
+  onClickFunction: (startDate: string, endDate: string) => void;
+}
+
+export function FilterDate({ onClickFunction }: Props) {
   const [startDate, setStartDate] = useState<string>(
     dayjs().startOf('month').toISOString(),
   )
@@ -23,7 +27,9 @@ export function FilterDate() {
         startDate,
         endDate,
       },
-    })
+    });
+
+    onClickFunction(startDate, endDate);
   }
 
   return (

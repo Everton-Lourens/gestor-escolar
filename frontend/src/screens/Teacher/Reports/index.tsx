@@ -11,8 +11,6 @@ import { ListMobile } from '../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
 import { ModalGrades } from './ModalGrades'
 import { FilterDate } from '../../../components/FilterDate'
-import { useRouter } from 'next/router'
-
 
 export interface Report {
   _id: string
@@ -21,12 +19,11 @@ export interface Report {
 }
 
 export function Reports() {
-  const router = useRouter();
 
-  function getDateQuery() {
-    const startDate = router?.query?.startDate || null;
-    const endDate = router?.query?.endDate || null;
-    return `startDate=${startDate || null}&endDate=${endDate || null}`;
+  function getDateQuery({ startDate = '', endDate = '' }) {
+    const today = new Date().toISOString();
+
+    return `startDate=${startDate || today || null}&endDate=${endDate || today || null}`;
   }
 
   const {
@@ -45,11 +42,11 @@ export function Reports() {
   const [loadingReports, setLoadingReports] = useState<boolean>(true)
   const [formModalOpened, setFormModalOpened] = useState<boolean>(false)
 
-  function getReports() {
+  function getReports(startDate = '', endDate = '') {
     setLoadingReports(true);
 
     reportsService
-      .getAll(getDateQuery())
+      .getAll(getDateQuery({ startDate, endDate }))
       .then((res) => {
         setReports(res.data.items)
       })
@@ -62,7 +59,7 @@ export function Reports() {
   }
 
   useEffect(() => {
-    getReports()
+    getReports();
   }, [])
 
   function handleDeleteReport(report: Report) {
@@ -81,7 +78,7 @@ export function Reports() {
               type: 'success',
               text: 'Turma excluída com sucesso',
             })
-            getReports()
+            getReports();
           })
           .catch((err) => {
             setAlertNotifyConfigs({
@@ -119,7 +116,10 @@ export function Reports() {
         InputFilter={<h3>Relatório - {new Date().toLocaleDateString('pt-BR')}</h3>}
       />
 
-      <FilterDate />
+      <FilterDate
+        onClickFunction={(startDate = '', endDate = '') => getReports(startDate, endDate)}
+      />
+
       <br />
 
       <div className={style.viewDesktop}>
