@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 import { getClassOfferList } from './classOfferCRUD';
+import { integer } from 'aws-sdk/clients/lightsail';
 
 // Middleware para enviar dados para o mongo
 
@@ -271,6 +272,9 @@ export async function getReportByDateOrTeacherId(
 
         console.log('--reportList--')
         */
+        let tithing: integer;
+        let offer: integer;
+        let subject: [string];
 
         if (Array.isArray(reportList)) {
             reportList.forEach((element, index) => {
