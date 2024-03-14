@@ -202,6 +202,7 @@ export async function getReportByDateOrTeacherId(
                 return await getClassOfferList(req, res, next);
                 return {
                     classOffer: await getClassOfferList(req, res, next),
+                    presence: await getClassOfferList(req, res, next),
                 };
             } catch (e) {
                 console.error(e);
@@ -214,9 +215,90 @@ export async function getReportByDateOrTeacherId(
 
         console.log('--reportList--')
         //  console.log(reportList[0].student)
+        /*
+        console.log(reportList[0].teacher)
+        console.log(reportList[0].student)
+        console.log(reportList[0].subject)
+        */
+        /*
+[
+  {teacher
+    _id: new ObjectId("65e641c85d7e2314d26a6a82"),
+    code: '1',
+    name: 'Newuba',
+    email: 'newuba@gmail.com',
+    password: '$2b$10$.zIkVJkrfxgAKPci0xJsIOBsdXo2C7EqKNgLxMpiTrDAbxwbVhNla',
+    occupation: 'teacher',
+    avatar: null,
+    avatarURL: null,
+    teacher: null,
+    warningsAmount: 0,
+    createdAt: 2024-03-04T21:48:56.011Z,
+    __v: 0
+  }
+]
+[
+  {student
+    _id: new ObjectId("65e6421e5d7e2314d26a6aa3"),
+    code: '1',
+    name: 'João',
+    email: 'joao@gmail.com',
+    password: '$2b$10$87rSYt.r32Vxzn06AKMotej1XfOWGcXc/NZzchPI2N25y9UPeCOP2',
+    occupation: 'student',
+    avatar: null,
+    avatarURL: null,
+    teacher: new ObjectId("65e641c85d7e2314d26a6a82"),
+    warningsAmount: 1,
+    createdAt: 2024-03-04T21:50:22.772Z,
+    __v: 0
+  }
+]
+[
+  {subject
+    _id: new ObjectId("65ee1228122fdcd45587431e"),
+    code: '2',
+    name: 'Professores',
+    students: [
+      new ObjectId("65e6421e5d7e2314d26a6aa3"),
+      new ObjectId("65e64693c5250fd1e67f8927"),
+      new ObjectId("65e73c908ca2b06d027a76d0")
+    ],
+    teacher: new ObjectId("65e641c85d7e2314d26a6a82"),
+    createdAt: 2024-03-10T20:03:52.600Z,
+    __v: 0
+  }
+]
+
+        console.log('--reportList--')
+        */
+
+        if (Array.isArray(reportList)) {
+            reportList.forEach((element, index) => {
+                console.log(element);
+                reportList[index].teacherName = element.teacher[0].name;
+                reportList[index].studentName = element.student[0].name;
+                reportList[index].subjectName = element.subject[0].name;
+                // Your forEach logic here
+                /*
+  {
+    _id: new ObjectId("65f35201d328144abc5e3bf2"),
+    tithing: 5,
+    offer: 5,
+    teacher: [ [Object] ],
+    student: [ [Object] ],
+    subject: [ [Object] ],
+    createdAt: 2024-03-14T19:37:37.605Z,
+    __v: 0
+  }
+
+                */
+            });
+        }
+        /*
+        console.log('--reportList--')
         console.log(reportList)
         console.log('--reportList--')
-
+        */
         return res.status(200).json({
             success: true,
             message: 'Busca do relatório concluído com sucesso',

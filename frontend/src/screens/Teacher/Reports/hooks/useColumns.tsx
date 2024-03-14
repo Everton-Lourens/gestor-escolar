@@ -29,7 +29,7 @@ export function useColumns({
     },
     {
       headerName: 'Turma',
-      field: 'className',
+      field: 'subjectName',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         params.value || '--',
     },
@@ -37,13 +37,13 @@ export function useColumns({
       headerName: 'Dízimos',
       field: 'tithing',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-        params?.value || 0,
+      `${params?.value || 0},00`,
     },
     {
       headerName: 'Ofertas',
       field: 'offer',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-        params?.value || 0,
+      `${params?.value || 0},00`,
     },
     {
       headerName: '',
