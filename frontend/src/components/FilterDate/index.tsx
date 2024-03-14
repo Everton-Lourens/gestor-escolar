@@ -48,7 +48,7 @@ export function FilterDate({ onClickFunction }: Props) {
         type="date"
         label="Data inicial"
         InputLabelProps={{ shrink: true }}
-        value={dayjs(startDate).format('YYYY-MM-DD')}
+        /*value={dayjs(startDate).format('YYYY-MM-DD')}*/
         onChange={(event) => {
           setStartDate(dayjs(event.target.value).startOf('day').toISOString())
         }}
@@ -59,7 +59,7 @@ export function FilterDate({ onClickFunction }: Props) {
         type="date"
         label="Data final"
         InputLabelProps={{ shrink: true }}
-        value={dayjs(endDate).format('YYYY-MM-DD')}
+        /*value={dayjs(endDate).format('YYYY-MM-DD')}*/
         onChange={(event) => {
           setEndDate(dayjs(event.target.value).endOf('day').toISOString())
         }}
