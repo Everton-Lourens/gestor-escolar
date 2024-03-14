@@ -19,8 +19,7 @@ export async function sendClassOffer(
 
         const { student, subject } = req.body.data;
         const studentId = student._id;
-        const studentName = student.name;
-        const { _id, name, teacher, offer, tithing } = subject;
+        const { _id, teacher, offer, tithing } = subject;
 
         /*
         console.log(req.body.data);
@@ -74,8 +73,6 @@ export async function sendClassOffer(
         // Criando uma nova instância do modelo OfferModel com as propriedades extraídas.
         const sendNewOffer = new OfferModel({
             subject: _id,
-            className: name,
-            studentName,
             teacher,
             student: studentId,
             tithing: newTithing || 0,
@@ -216,8 +213,8 @@ export async function getReportByDateOrTeacherId(
         const reportList = await getReportList();
 
         console.log('--reportList--')
-       //  console.log(reportList[0].student)
-       console.log(reportList)
+        //  console.log(reportList[0].student)
+        console.log(reportList)
         console.log('--reportList--')
 
         return res.status(200).json({

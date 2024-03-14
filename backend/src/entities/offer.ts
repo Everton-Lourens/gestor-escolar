@@ -2,8 +2,6 @@ import mongoose, { Types } from 'mongoose'
 
 export interface Offer {
   _id: Types.ObjectId
-  className: string
-  studentName: string
   tithing: number
   offer: number
   teacher: Types.ObjectId
@@ -13,8 +11,6 @@ export interface Offer {
 }
 
 const offerSchema = new mongoose.Schema({
-  className: { type: String, default: null, },
-  studentName: { type: String, default: null, },
   tithing: { type: Number, default: 0 },
   offer: { type: Number, default: 0 },
   teacher: { type: 'ObjectId', ref: 'User', default: null },

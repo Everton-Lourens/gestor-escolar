@@ -9,12 +9,17 @@ type Props = {
 }
 
 export function FilterDate({ onClickFunction }: Props) {
+  const currentDate = dayjs().toISOString();
+  const [startDate, setStartDate] = useState<string>(currentDate);
+  const [endDate, setEndDate] = useState<string>(currentDate);
+  /*
   const [startDate, setStartDate] = useState<string>(
     dayjs().startOf('month').toISOString(),
   )
   const [endDate, setEndDate] = useState<string>(
     dayjs().endOf('month').toISOString(),
   )
+  */
 
   const router = useRouter()
 
@@ -29,7 +34,10 @@ export function FilterDate({ onClickFunction }: Props) {
       },
     });
 
-    onClickFunction(startDate, endDate);
+    onClickFunction(
+      dayjs(startDate).startOf('day').toISOString(),
+      dayjs(endDate).endOf('day').toISOString()
+    );
   }
 
   return (

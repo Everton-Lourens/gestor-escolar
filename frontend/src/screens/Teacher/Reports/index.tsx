@@ -11,6 +11,7 @@ import { ListMobile } from '../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
 import { ModalGrades } from './ModalGrades'
 import { FilterDate } from '../../../components/FilterDate'
+import dayjs from 'dayjs'
 
 export interface Report {
   _id: string
@@ -21,9 +22,10 @@ export interface Report {
 export function Reports() {
 
   function getDateQuery({ startDate = '', endDate = '' }) {
-    const today = new Date().toISOString();
+    const startOfToday = dayjs(new Date()).startOf('day').toISOString();
+    const endOfToday = dayjs(new Date()).endOf('day').toISOString();
 
-    return `startDate=${startDate || today || null}&endDate=${endDate || today || null}`;
+    return `startDate=${startDate || startOfToday}&endDate=${endDate || endOfToday}`;
   }
 
   const {

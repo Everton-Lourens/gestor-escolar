@@ -15,7 +15,6 @@ const fieldsMobile = useFieldsMobile();
 
 interface Offer {
   _id: string;
-  className: string;
   tithing: number;
   offer: number;
   teacher: string;

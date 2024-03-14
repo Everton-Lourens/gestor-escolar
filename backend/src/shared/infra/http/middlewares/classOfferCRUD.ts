@@ -30,8 +30,7 @@ export async function sendClassOffer(
 
         const { student, subject } = req.body.data;
         const studentId = student._id;
-        const studentName = student.name;
-        const { _id, name, teacher, offer, tithing } = subject;
+        const { _id, teacher, offer, tithing } = subject;
 
         /*
         console.log(req.body.data);
@@ -85,8 +84,6 @@ export async function sendClassOffer(
         // Criando uma nova instância do modelo OfferModel com as propriedades extraídas.
         const sendNewOffer = new OfferModel({
             subject: _id,
-            className: name,
-            studentName,
             teacher,
             student: studentId,
             tithing: newTithing || 0,
@@ -225,6 +222,7 @@ export async function getClassOfferList(
 ) {
     // Verifica se a data é válida
     const { startDate, endDate } = await checkDateQuery(req, res, next);
+
     if (!startDate || !endDate) {
         return res.status(400).json({
             success: false,
@@ -233,7 +231,13 @@ export async function getClassOfferList(
         });
     }
     try {
-        //@@@@@@@@@@@@@@@@@@ aqui eu tenho que remontar todos os JSONs depois da busca,
+        console.log('@@@@@@@@@@@@@@@@@')
+        console.log(startDate, endDate)
+        console.log('@@@@@@@@@@@@@@@@@\n\n')
+        /*
+        @@@@@@@@@@@@@@@@@@ aqui eu tenho que remontar todos os JSONs depois da busca,
+        &&& apagar o ""
+        */
         return await OfferModel.aggregate([
             {
                 $match: {
