@@ -21,7 +21,8 @@ export interface Report {
 
 export function Reports() {
 
-  function getDateQuery({ startDate = '', endDate = '' }) {
+  function getDateQuery() {
+    // Isso é refundância mas tudo bem (startDate e endDate já tem esse código do "dayjs" armazenado)
     const startOfToday = dayjs(new Date()).startOf('day').toISOString();
     const endOfToday = dayjs(new Date()).endOf('day').toISOString();
 
@@ -44,11 +45,16 @@ export function Reports() {
   const [loadingReports, setLoadingReports] = useState<boolean>(true)
   const [formModalOpened, setFormModalOpened] = useState<boolean>(false)
 
-  function getReports(startDate = '', endDate = '') {
+  const startOfToday = dayjs(new Date()).startOf('day').toISOString();
+  const endOfToday = dayjs(new Date()).endOf('day').toISOString();
+  const [startDate, setStartDate] = useState<string>(startOfToday);
+  const [endDate, setEndDate] = useState<string>(endOfToday);
+
+  function getReports() {
     setLoadingReports(true);
 
     reportsService
-      .getAll(getDateQuery({ startDate, endDate }))
+      .getAll(getDateQuery())
       .then((res) => {
         setReports(res.data.items)
       })
@@ -115,11 +121,16 @@ export function Reports() {
   return (
     <>
       <HeaderPageReport
-        InputFilter={<h3>Relatório - {new Date().toLocaleDateString('pt-BR')}</h3>}
+        InputFilter={<h3>Relatório — {new Date(startDate).toLocaleDateString('pt-BR')} até {new Date(endDate).toLocaleDateString('pt-BR')}</h3>}
       />
 
       <FilterDate
-        onClickFunction={(startDate = '', endDate = '') => getReports(startDate, endDate)}
+        onClickFunction={
+          function (startDate = '', endDate = '') {
+            setStartDate(startDate);
+            setEndDate(endDate);
+            getReports();
+          }}
       />
 
       <br />
