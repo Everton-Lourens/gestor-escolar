@@ -142,9 +142,9 @@ export function Reports() {
           {/*JSON.stringify(reports[0].subject[0].students)*/}
                     {/*reports['total'].offer*/}
                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ <br />
-                    Oferta total: {valueTotal.totalOffer}
+                    Oferta total: {valueTotal?.totalOffer || 0}
                     <br />
-                    Dízimo total: {valueTotal.totalTithing}
+                    Dízimo total: {valueTotal?.totalTithing || 0}
                     <br />@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
       <br />

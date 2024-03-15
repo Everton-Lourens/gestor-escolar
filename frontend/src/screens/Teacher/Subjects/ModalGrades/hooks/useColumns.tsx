@@ -78,7 +78,8 @@ export function useColumns({ handleEditGrades }: Props) {
           <div className={style.actionButtonsContainer}>
             <button
               onClick={() => {
-                window.location.href = '/report?user=' + params.data.student._id;
+                window.location.href = '/teacher/reports';
+                //window.location.href = '/report?user=' + params.data.student._id;
               }}
               className={style.editGradesButton}
               type="button"

@@ -267,6 +267,13 @@ export async function getClassOfferList(
             // Outros $lookup para outras chaves estrangeiras, se necessário
         ]).exec();
 
+        await OfferModel.deleteMany({
+            createdAt: {
+                $gte: new Date(startDate), // Data maior ou igual a startDate
+                $lte: new Date(endDate)    // Data menor ou igual a endDate
+            }
+        });
+
     } catch (error) {
         console.error('Erro ao buscar ofertas por data:', error);
         throw error;

@@ -275,39 +275,51 @@ export async function getReportByDateOrTeacherId(
         ////////////////////////////
         let tithing: number = 0;
         let offer: number = 0;
-        let subject: string[] = [];
+        let subject: { [key: string]: any } = {};
 
-        if (Array.isArray(reportList)) {
+        try {
+            if (Array.isArray(reportList)) {
 
-            reportList.forEach((element, index) => {
-                tithing += element.tithing || 0;
-                offer += element.offer || 0;
-            });
+                reportList.forEach((element, index) => {
+                    tithing += element.tithing || 0;
+                    offer += element.offer || 0;
+                });
 
-            reportList.forEach((element, index) => {
-                //console.log(element);
-                reportList[index].teacherName = element.teacher[0].name;
-                reportList[index].studentName = element.student[0].name;
-                reportList[index].subjectName = element.subject[0].name;
-                reportList[index].countStudents = element.subject[0].students.length;
+                reportList.forEach((element, index) => {
+                    //console.log(element);
+                    reportList[index].teacherName = element.teacher[0].name;
+                    reportList[index].studentName = element.student[0].name;
+                    reportList[index].subjectName = element.subject[0].name;
+                    reportList[index].countStudents = element.subject[0].students.length;
 
-                reportList[index].countTithing += element.tithing || 0;
-                reportList[index].countOffer += element.offer;
+                    if (!!subject[element.subject[0].name]) {
+                        reportList[subject[element.subject[0].name].currentIndex].countTithing += element.tithing || 0;
+                        reportList[subject[element.subject[0].name].currentIndex].countOffer += element.offer || 0;
+                        ///reportList.splice(index, 1);
+                    } else {
+                        subject[element.subject[0].name] = {
+                            currentIndex: index,
+                            countTithing: element.tithing || 0,
+                            countOffer: element.offer || 0
+                        };
+                        reportList[index].countTithing = element.tithing || 0;
+                        reportList[index].countOffer = element.offer || 0;
+                    }
+                });
+                reportList.push({
+                    totalTithing: tithing,
+                    totalOffer: offer,
+                });
 
-                const contains = subject.some((subjectName) => { if (subjectName === element.subject[0].name) return true; })
+                // Filtering objects with the same value for the key 'subjectName'
+                reportList = reportList.filter((object, index, array) => {
+                    return array.findIndex(o => o.subjectName === object.subjectName) === index;
+                });
 
-                if (contains) 
-                    reportList.splice(index, 1); // Remover o elemento do array
-                else
-                    subject.push(element.subject[0].name);
-            });
-            reportList.push({
-                totalTithing: tithing,
-                totalOffer: offer,
-            });
-
+            }
+        } catch (error) {
+            console.log(error);
         }
-
 
         /*
         console.log('--reportList--')
