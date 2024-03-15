@@ -141,14 +141,18 @@ export function Reports() {
           {/*JSON.stringify(reports[3].subject[0].students.length)*/}
           {/*JSON.stringify(reports[0].subject[0].students)*/}
                     {/*reports['total'].offer*/}
-                    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ <br />
+                    @@@@@@@@ <br />
                     Oferta total: {valueTotal?.totalOffer || 0}
                     <br />
                     Dízimo total: {valueTotal?.totalTithing || 0}
-                    <br />@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    <br />@@@@@@@@
 
       <br />
+      (deve poder saber quem teve mais presenças)
       <br />
+      (deve poder saber quem teve mais dizimos (talvez))
+      <br />
+      criar um botão para ir ver o relatório individual onde mostra quem deu mais dizimos, presenças, etc.
 
       <div className={style.viewDesktop}>
         <TableComponent

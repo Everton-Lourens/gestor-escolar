@@ -31,7 +31,7 @@ export function useColumns({
       headerName: 'Alunos',
       field: 'countStudents',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-      `${params?.value || 0}`,
+        `${params?.value || 0}`,
     },
     {
       headerName: 'Presenças',
@@ -43,13 +43,13 @@ export function useColumns({
       headerName: 'Dízimos',
       field: 'countTithing',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-      `${params?.value || 0},00`,
+        `${params?.value || 0},00`,
     },
     {
       headerName: 'Ofertas',
       field: 'countOffer',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-      `${params?.value || 0},00`,
+        `${params?.value || 0},00`,
     },
     {
       headerName: '',
@@ -63,7 +63,10 @@ DAQUI VEM O ID DA TURMA
           <div className={style.actionButtonsContainer}>
             <button
               onClick={() => {
-                handleAddStudents(params.data)
+                window.location.href = `/teacher/reports/${params.data._id}`
+                return;
+                MOSTRAR_RELATÓRIO_INDIVIDUAL(params.data);
+                //handleAddStudents(params.data)
               }}
               className={style.insertStudentsButton}
               type="button"
