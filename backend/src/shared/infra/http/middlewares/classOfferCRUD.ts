@@ -231,13 +231,6 @@ export async function getClassOfferList(
         });
     }
     try {
-        console.log('@@@@@@@@@@@@@@@@@')
-        console.log(startDate, endDate)
-        console.log('@@@@@@@@@@@@@@@@@\n\n')
-        /*
-        @@@@@@@@@@@@@@@@@@ aqui eu tenho que remontar todos os JSONs depois da busca,
-        &&& apagar o ""
-        */
         return await OfferModel.aggregate([
             {
                 $match: {

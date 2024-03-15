@@ -21,12 +21,12 @@ export interface Report {
 
 export function Reports() {
 
-  function getDateQuery() {
+  function getDateQuery(startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
     // Isso é refundância mas tudo bem (startDate e endDate já tem esse código do "dayjs" armazenado)
     const startOfToday = dayjs(new Date()).startOf('day').toISOString();
     const endOfToday = dayjs(new Date()).endOf('day').toISOString();
 
-    return `startDate=${startDate || startOfToday}&endDate=${endDate || endOfToday}`;
+    return `startDate=${startDateResponseFromFilter || startOfToday}&endDate=${endDateResponseFromFilter || endOfToday}`;
   }
 
   const {
@@ -50,11 +50,11 @@ export function Reports() {
   const [startDate, setStartDate] = useState<string>(startOfToday);
   const [endDate, setEndDate] = useState<string>(endOfToday);
 
-  function getReports() {
+  function getReports(startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
     setLoadingReports(true);
 
     reportsService
-      .getAll(getDateQuery())
+      .getAll(getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter))
       .then((res) => {
         setReports(res.data.items)
       })
@@ -126,10 +126,10 @@ export function Reports() {
 
       <FilterDate
         onClickFunction={
-          function (startDate = '', endDate = '') {
-            setStartDate(startDate);
-            setEndDate(endDate);
-            getReports();
+          function (startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
+            setStartDate(startDateResponseFromFilter)
+            setEndDate(endDateResponseFromFilter)
+            getReports(startDateResponseFromFilter, endDateResponseFromFilter);
           }}
       />
 

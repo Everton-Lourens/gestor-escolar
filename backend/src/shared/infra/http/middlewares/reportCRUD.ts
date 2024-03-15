@@ -278,7 +278,7 @@ export async function getReportByDateOrTeacherId(
 
         if (Array.isArray(reportList)) {
             reportList.forEach((element, index) => {
-                console.log(element);
+                //console.log(element);
                 reportList[index].teacherName = element.teacher[0].name;
                 reportList[index].studentName = element.student[0].name;
                 reportList[index].subjectName = element.subject[0].name;
