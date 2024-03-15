@@ -214,11 +214,181 @@ export async function getReportByDateOrTeacherId(
         // Executa a função reportList assíncrona para obter a lista de ofertas
         let reportList = await getReportList();
 
-        //  console.log(reportList[0].student)
+        //  console.log(reportList[0]?.student)
         /*
-        console.log(reportList[0].teacher)
-        console.log(reportList[0].student)
-        console.log(reportList[0].subject)
+        console.log(reportList[0]?.teacher)
+        console.log(reportList[0]?.student)
+        console.log(reportList[0]?.subject)
+        */
+        /*
+            [
+            {teacher
+                _id: new ObjectId("65e641c85d7e2314d26a6a82"),
+                code: '1',
+                name: 'Newuba',
+                email: 'newuba@gmail.com',
+                password: '$2b$10$.zIkVJkrfxgAKPci0xJsIOBsdXo2C7EqKNgLxMpiTrDAbxwbVhNla',
+                occupation: 'teacher',
+                avatar: null,
+                avatarURL: null,
+                teacher: null,
+                warningsAmount: 0,
+                createdAt: 2024-03-04T21:48:56.011Z,
+                __v: 0
+            }
+            ]
+            [
+            {student
+                _id: new ObjectId("65e6421e5d7e2314d26a6aa3"),
+                code: '1',
+                name: 'João',
+                email: 'joao@gmail.com',
+                password: '$2b$10$87rSYt.r32Vxzn06AKMotej1XfOWGcXc/NZzchPI2N25y9UPeCOP2',
+                occupation: 'student',
+                avatar: null,
+                avatarURL: null,
+                teacher: new ObjectId("65e641c85d7e2314d26a6a82"),
+                warningsAmount: 1,
+                createdAt: 2024-03-04T21:50:22.772Z,
+                __v: 0
+            }
+            ]
+            [
+            {subject
+                _id: new ObjectId("65ee1228122fdcd45587431e"),
+                code: '2',
+                name: 'Professores',
+                students: [
+                new ObjectId("65e6421e5d7e2314d26a6aa3"),
+                new ObjectId("65e64693c5250fd1e67f8927"),
+                new ObjectId("65e73c908ca2b06d027a76d0")
+                ],
+                teacher: new ObjectId("65e641c85d7e2314d26a6a82"),
+                createdAt: 2024-03-10T20:03:52.600Z,
+                __v: 0
+            }
+            ]
+
+        console.log('--reportList--')
+        */
+        /////////////////////////////
+        ////////////////////////////
+        let tithing: number = 0;
+        let offer: number = 0;
+        let subject: { [key: string]: any } = {};
+
+        try {
+            if (Array.isArray(reportList)) {
+
+                reportList.forEach((element, index) => {
+                    tithing += element?.tithing || 0;
+                    offer += element?.offer || 0;
+                });
+
+                reportList.forEach((element, index) => {
+                    //console.log(element);
+                    reportList[index].teacherName = element?.teacher[0]?.name || '';
+                    reportList[index].studentName = element?.student[0]?.name || '';
+                    reportList[index].subjectName = element?.subject[0]?.name || '';
+                    reportList[index].countStudents = element?.subject[0]?.students.length;
+
+                    if (!!subject[element?.subject[0]?.name]) {
+                        reportList[subject[element?.subject[0]?.name].currentIndex].countTithing += element?.tithing || 0;
+                        reportList[subject[element?.subject[0]?.name].currentIndex].countOffer += element?.offer || 0;
+                        ///reportList.splice(index, 1);
+                    } else {
+                        subject[element?.subject[0]?.name] = {
+                            currentIndex: index,
+                            countTithing: element?.tithing || 0,
+                            countOffer: element?.offer || 0
+                        };
+                        reportList[index].countTithing = element?.tithing || 0;
+                        reportList[index].countOffer = element?.offer || 0;
+                    }
+                });
+                reportList.push({
+                    totalTithing: tithing,
+                    totalOffer: offer,
+                });
+
+                // Filtering objects with the same value for the key 'subjectName'
+                reportList = reportList.filter((object, index, array) => {
+                    return array.findIndex(o => o.subjectName === object.subjectName) === index;
+                });
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        /*
+        console.log('--reportList--')
+        console.log(reportList)
+        console.log('--reportList--')
+        */
+        return res.status(200).json({
+            success: true,
+            message: 'Busca do relatório concluído com sucesso',
+            items: reportList || [],
+        })
+
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: `Erro ao buscar ofertas das turma pela data: "${error}"`,
+            items: [],
+        });
+    }
+}
+
+
+
+
+export async function getReportBySubjectId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+
+        /* AS OUTRAS CLASSES JÁ FAZEM ISSO
+        // Verifica se a data é válida
+        const { startDate, endDate } = await checkDateQuery(req, res, next);
+        if (!startDate || !endDate) {
+            return res.status(400).json({
+                success: false,
+                message: 'Formato de data inválido',
+                items: [],
+            });
+        }
+        */
+
+        return res.status(200).send('<h1>CRIAR RELATÓRIO INDIVIDUAL POR TURMA<h1/>');
+
+
+
+
+        const getReportList = async () => {
+            try {
+                return await getClassOfferList(req, res, next);
+                return {
+                    classOffer: await getClassOfferList(req, res, next),
+                    presence: await getClassOfferList(req, res, next),
+                };
+            } catch (e) {
+                console.error(e);
+                return null;
+            }
+        }
+
+        // Executa a função reportList assíncrona para obter a lista de ofertas
+        let reportList = await getReportList();
+
+        //  console.log(reportList[0]?.student)
+        /*
+        console.log(reportList[0]?.teacher)
+        console.log(reportList[0]?.student)
+        console.log(reportList[0]?.subject)
         */
         /*
 [
@@ -281,29 +451,29 @@ export async function getReportByDateOrTeacherId(
             if (Array.isArray(reportList)) {
 
                 reportList.forEach((element, index) => {
-                    tithing += element.tithing || 0;
-                    offer += element.offer || 0;
+                    tithing += element?.tithing || 0;
+                    offer += element?.offer || 0;
                 });
 
                 reportList.forEach((element, index) => {
                     //console.log(element);
-                    reportList[index].teacherName = element.teacher[0].name;
-                    reportList[index].studentName = element.student[0].name;
-                    reportList[index].subjectName = element.subject[0].name;
-                    reportList[index].countStudents = element.subject[0].students.length;
+                    reportList[index].teacherName = element?.teacher[0]?.name;
+                    reportList[index].studentName = element?.student[0]?.name;
+                    reportList[index].subjectName = element?.subject[0]?.name;
+                    reportList[index].countStudents = element?.subject[0]?.students.length;
 
-                    if (!!subject[element.subject[0].name]) {
-                        reportList[subject[element.subject[0].name].currentIndex].countTithing += element.tithing || 0;
-                        reportList[subject[element.subject[0].name].currentIndex].countOffer += element.offer || 0;
+                    if (!!subject[element?.subject[0]?.name]) {
+                        reportList[subject[element?.subject[0]?.name].currentIndex].countTithing += element?.tithing || 0;
+                        reportList[subject[element?.subject[0]?.name].currentIndex].countOffer += element?.offer || 0;
                         ///reportList.splice(index, 1);
                     } else {
-                        subject[element.subject[0].name] = {
+                        subject[element?.subject[0]?.name] = {
                             currentIndex: index,
-                            countTithing: element.tithing || 0,
-                            countOffer: element.offer || 0
+                            countTithing: element?.tithing || 0,
+                            countOffer: element?.offer || 0
                         };
-                        reportList[index].countTithing = element.tithing || 0;
-                        reportList[index].countOffer = element.offer || 0;
+                        reportList[index].countTithing = element?.tithing || 0;
+                        reportList[index].countOffer = element?.offer || 0;
                     }
                 });
                 reportList.push({
@@ -340,4 +510,3 @@ export async function getReportByDateOrTeacherId(
         });
     }
 }
-
