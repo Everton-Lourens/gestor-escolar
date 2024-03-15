@@ -212,9 +212,8 @@ export async function getReportByDateOrTeacherId(
         }
 
         // Executa a função reportList assíncrona para obter a lista de ofertas
-        const reportList = await getReportList();
+        let reportList = await getReportList();
 
-        console.log('--reportList--')
         //  console.log(reportList[0].student)
         /*
         console.log(reportList[0].teacher)
@@ -272,32 +271,44 @@ export async function getReportByDateOrTeacherId(
 
         console.log('--reportList--')
         */
-        let tithing: integer;
-        let offer: integer;
-        let subject: [string];
+        /////////////////////////////
+        ////////////////////////////
+        let tithing: number = 0;
+        let offer: number = 0;
+        let subject: string[] = [];
 
         if (Array.isArray(reportList)) {
+
+            reportList.forEach((element, index) => {
+                tithing += element.tithing || 0;
+                offer += element.offer || 0;
+            });
+
             reportList.forEach((element, index) => {
                 //console.log(element);
                 reportList[index].teacherName = element.teacher[0].name;
                 reportList[index].studentName = element.student[0].name;
                 reportList[index].subjectName = element.subject[0].name;
-                // Your forEach logic here
-                /*
-  {
-    _id: new ObjectId("65f35201d328144abc5e3bf2"),
-    tithing: 5,
-    offer: 5,
-    teacher: [ [Object] ],
-    student: [ [Object] ],
-    subject: [ [Object] ],
-    createdAt: 2024-03-14T19:37:37.605Z,
-    __v: 0
-  }
+                reportList[index].countStudents = element.subject[0].students.length;
 
-                */
+                reportList[index].countTithing += element.tithing || 0;
+                reportList[index].countOffer += element.offer;
+
+                const contains = subject.some((subjectName) => { if (subjectName === element.subject[0].name) return true; })
+
+                if (contains) 
+                    reportList.splice(index, 1); // Remover o elemento do array
+                else
+                    subject.push(element.subject[0].name);
             });
+            reportList.push({
+                totalTithing: tithing,
+                totalOffer: offer,
+            });
+
         }
+
+
         /*
         console.log('--reportList--')
         console.log(reportList)

@@ -50,6 +50,8 @@ export function Reports() {
   const [startDate, setStartDate] = useState<string>(startOfToday);
   const [endDate, setEndDate] = useState<string>(endOfToday);
 
+  const [valueTotal, setValueTotal] = useState<number>(0);
+
   function getReports(startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
     setLoadingReports(true);
 
@@ -57,6 +59,8 @@ export function Reports() {
       .getAll(getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter))
       .then((res) => {
         setReports(res.data.items)
+        const total = res.data.items.pop();
+        setValueTotal(total);
       })
       .catch((err) => {
         console.log('ERRO AO BUSCAR RELATÓRIO, ', err)
@@ -134,13 +138,24 @@ export function Reports() {
       />
 
       <br />
+          {/*JSON.stringify(reports[3].subject[0].students.length)*/}
+          {/*JSON.stringify(reports[0].subject[0].students)*/}
+                    {/*reports['total'].offer*/}
+                    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ <br />
+                    Oferta total: {valueTotal.totalOffer}
+                    <br />
+                    Dízimo total: {valueTotal.totalTithing}
+                    <br />@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+      <br />
+      <br />
 
       <div className={style.viewDesktop}>
         <TableComponent
           loading={loadingReports}
           columns={columns}
           rows={reports}
-          emptyText="Nenhuma turma cadastrada"
+          emptyText="Nada cadastrado"
         />
       </div>
       <div className={style.viewMobile}>
@@ -149,7 +164,7 @@ export function Reports() {
           collapseItems={columns}
           itemFields={fieldsMobile}
           items={reports}
-          emptyText="Nenhuma turma cadastrada"
+          emptyText="Nada cadastrado"
         />
       </div>
 

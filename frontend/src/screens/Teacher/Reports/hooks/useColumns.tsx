@@ -22,26 +22,32 @@ export function useColumns({
 
   return [
     {
-      headerName: 'Nome',
-      field: 'studentName',
-      valueFormatter: (params: CellFunctionParams<Report>) =>
-        params.value || '--',
-    },
-    {
       headerName: 'Turma',
       field: 'subjectName',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         params.value || '--',
     },
     {
+      headerName: 'Alunos',
+      field: 'countStudents',
+      valueFormatter: (params: CellFunctionParams<Report>) =>
+      `${params?.value || 0}`,
+    },
+    {
+      headerName: 'Presenças',
+      field: 'presence',
+      valueFormatter: (params: CellFunctionParams<Report>) =>
+        params.value || '--',
+    },
+    {
       headerName: 'Dízimos',
-      field: 'tithing',
+      field: 'countTithing',
       valueFormatter: (params: CellFunctionParams<Report>) =>
       `${params?.value || 0},00`,
     },
     {
       headerName: 'Ofertas',
-      field: 'offer',
+      field: 'countOffer',
       valueFormatter: (params: CellFunctionParams<Report>) =>
       `${params?.value || 0},00`,
     },

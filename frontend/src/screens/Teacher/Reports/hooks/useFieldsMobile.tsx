@@ -3,7 +3,7 @@ import { Field } from '../../../../components/ListMobile/interfaces/Field'
 export function useFieldsMobile(): Field[] {
   return [
     {
-      field: 'name',
+      field: 'subjectName',
       valueFormatter: (params: any) => params?.value || '--',
     },
     {
