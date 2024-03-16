@@ -11,13 +11,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 interface UseColumnsParams {
   handleDeleteReport: (report: Report) => void
   handleAddStudents: (report: Report) => void
-  handleShowGrades: (report: Report) => void
+  handleShowPresences: (report: Report) => void
 }
 
 export function useColumns({
   handleDeleteReport,
   handleAddStudents,
-  handleShowGrades,
+  handleShowPresences,
 }: UseColumnsParams) {
 
   return [
@@ -41,13 +41,13 @@ export function useColumns({
     },
     {
       headerName: 'Dízimos',
-      field: 'countTithing',
+      field: 'tithing',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         `${params?.value || 0},00`,
     },
     {
       headerName: 'Ofertas',
-      field: 'countOffer',
+      field: 'offer',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         `${params?.value || 0},00`,
     },
@@ -76,9 +76,9 @@ DAQUI VEM O ID DA TURMA
 
             <button
               onClick={() => {
-                handleShowGrades(params.data)
+                handleShowPresences(params.data)
               }}
-              className={style.showGradesButton}
+              className={style.showPresencesButton}
               type="button"
             >
               <FontAwesomeIcon icon={faDollarSign} className={style.icon} />

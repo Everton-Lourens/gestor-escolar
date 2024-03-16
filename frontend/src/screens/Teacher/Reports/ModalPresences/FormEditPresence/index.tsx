@@ -1,20 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Grade } from '..'
+import { Presence } from '..'
 import { CustomTextField } from '../../../../../components/CustomTextField'
-import style from './FormEditGrade.module.scss'
+import style from './FormEditPresence.module.scss'
 import { useState } from 'react';
 import { faAngleLeft, faDollar } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {
-  gradeToEditData: Grade
-  setGradeToEditData: (gradeData: Grade) => void
+  presenceToEditData: Presence
+  setPresenceToEditData: (presenceData: Presence) => void
   handleBack: () => void
 }
 
-export function FormEditGrade({
+export function FormEditPresence({
   handleBack,
-  gradeToEditData,
-  setGradeToEditData,
+  presenceToEditData,
+  setPresenceToEditData,
 }: Props) {
 
   return (
@@ -26,22 +26,22 @@ export function FormEditGrade({
 
       <CustomTextField
         label="Dizimo"
-        value={gradeToEditData.firstGrade}
+        value={presenceToEditData.firstPresence}
         onChange={(event) => {
-          setGradeToEditData({
-            ...gradeToEditData,
-            firstGrade: parseFloat(event.target.value) || 0,
+          setPresenceToEditData({
+            ...presenceToEditData,
+            firstPresence: parseFloat(event.target.value) || 0,
           })
         }}
       />
 
       <CustomTextField
         label="Oferta"
-        value={gradeToEditData.secondGrade}
+        value={presenceToEditData.secondPresence}
         onChange={(event) => {
-          setGradeToEditData({
-            ...gradeToEditData,
-            secondGrade: parseFloat(event.target.value) || 0,
+          setPresenceToEditData({
+            ...presenceToEditData,
+            secondPresence: parseFloat(event.target.value) || 0,
           })
         }}
       />

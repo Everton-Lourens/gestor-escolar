@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { PresenceModel } from '../../../../entities/presence'
 import mongoose, { Types } from 'mongoose'
 import { DynamoDBStreams } from 'aws-sdk';
+import { checkDateQuery } from './functions';
 
 // Middleware para enviar dados para o mongo
 
@@ -76,83 +77,11 @@ export async function sendPresence(
 }
 
 
-export async function getPresenceListByDate(
+
+export async function getAllClassOffer(
     req: Request,
     res: Response,
-    next: NextFunction
-) {
-    try {
-
-        // TRABALHANDO5 (GET)
-
-        // URL PARA TESTAR a consulta das presenças no dia 07/03/2024:
-        // http://localhost:4444/presence/65e641c85d7e2314d26a6a82?date=2024-03-09
-
-
-        // Extrai o ID do professor a partir dos parâmetros da requisição.
-        const teacherId = req.params.teacherId;
-
-        if (!teacherId || !req.query['date'])
-            return res.status(400).send(`<h1>ID do professor ou data ausente</h1>`)
-
-        // Extrai a data da consulta da query da requisição e converte para um objeto Date
-        const dateQueryParam: string = req.query.date as string; // Ajuste o tipo conforme necessário
-        const dateFilter = new Date(dateQueryParam);
-
-        // Verifica se a data é válida
-        if (isNaN(dateFilter.getTime())) {
-            return res.status(400).json({ mensagem: 'Formato de data inválido' });
-        }
-
-        // Converte o ID do professor para um ObjectId do mongoose.
-        const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
-
-        // Realiza uma agregação no modelo PresenceModel para obter a lista de presenças
-        const presentList: IPresence[] = await PresenceModel.aggregate([
-            {
-                $match: {
-                    teacher: teacherObjectId,
-                    createdAt: {
-                        $gte: dateFilter,
-                        $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
-                    },
-                },
-            },
-            {
-                $sort: {
-                    student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                    createdAt: -1, // Classifica por data de criação em ordem decrescente
-                },
-            },
-            {
-                $group: {
-                    _id: '$student',
-                    latestPresence: { $first: '$$ROOT' },
-                },
-            },
-            {
-                $replaceRoot: { newRoot: '$latestPresence' },
-            },
-        ]);
-
-        // Excluir registros duplicados mantendo apenas o mais recente
-        await PresenceModel.deleteMany({
-            _id: { $nin: presentList.map((presence) => presence._id) },
-        });
-
-        return res.status(200).json({ data: { count: presentList.length, presentList } });
-
-    } catch (error) {
-        return res.status(404).send(`<h1>Erro ao salvar a presença</h1> <p>${error}</p>`);
-    }
-}
-
-
-
-export async function getAllPresence(
-    req: Request,
-    res: Response,
-    next: NextFunction
+    _next: NextFunction
 ) {
     try {
         const viewAll = req.query.viewAll;
@@ -164,122 +93,38 @@ export async function getAllPresence(
         // Buscando ofertas e dizimos onde os dois não podem ser igualmente 0.
         const offerList: IOffer[] = await PresenceModel.find({});
 
-        return res.status(200).json({ data: { count: offerList.length, offerList } });
+        return res.status(200).json({
+            success: true,
+            message: 'Busca do relatório concluído com sucesso',
+            items: offerList,
+        })
 
     } catch (error) {
-        return res.status(404).send(`<h1>Erro ao buscar todas as presenças</h1> <p>${error}</p>`);
+        return res.status(404).send(`<h1>Erro ao buscar todas as ofertas</h1> <p>${error}</p>`);
     }
 }
 
 
-export async function getPresenceListByDateOrSubjectId(
+export async function getPresenceByDateOrSubjectId(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) {
     try {
+        // Executa a função presenceList assíncrona para obter a lista de ofertas
+        const presenceList = await getPresenceList(req, res, next);
 
-        // TRABALHANDO5 (GET)
+        const sucess = (Array.isArray(presenceList) && presenceList.length > 0) ? true : false;
 
-        // URL PARA TESTAR a consulta das ofertas do dia 07/03/2024:
-        // http://localhost:4444/class-offer/65e641c85d7e2314d26a6a82?date=2024-03-09
-
-        if (!req.query['date']) {
-            return res.status(400).json({
-                success: false,
-                message: 'Informe a data da consulta',
-                items: [],
-            });
-        }
-
-        // Extrai a data da consulta da query da requisição e converte para um objeto Date
-        const dateQueryParam: string = req.query.date as string; // Ajuste o tipo conforme necessário
-        const dateFilter = new Date(dateQueryParam);
-
-        // Verifica se a data é válida
-        if (isNaN(dateFilter.getTime())) {
-            return res.status(400).json({
-                success: false,
-                message: 'Formato de data inválido',
-                items: [],
-            });
-        }
-
-        // Extrai o ID do professor a partir dos parâmetros da requisição.
-        const teacherId = req?.query?.teacherId;
-
-        // Verifica se teacherId está definido antes de criar o ObjectId
-        const teacherObjectId = teacherId ? new mongoose.Types.ObjectId(teacherId) : null;
-
-
-        const getPresenceList = async () => {
-
-            if (!!teacherObjectId) {
-                return await OfferModel.aggregate([
-                    {
-                        $match: {
-                            teacher: teacherObjectId,
-                            createdAt: {
-                                $gte: dateFilter,
-                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
-                            },
-                        },
-                    },
-                    {
-                        $sort: {
-                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                            createdAt: -1, // Classifica por data de criação em ordem decrescente
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: '$student',
-                            latestOffer: { $first: '$$ROOT' },
-                        },
-                    },
-                    {
-                        $replaceRoot: { newRoot: '$latestOffer' },
-                    },
-                ]);
-            } else {
-                return await OfferModel.aggregate([
-                    {
-                        $match: {
-                            createdAt: {
-                                $gte: dateFilter,
-                                $lt: new Date(dateFilter.getTime() + 24 * 60 * 60 * 1000),
-                            },
-                        },
-                    },
-                    {
-                        $sort: {
-                            student: 1, // Classifica por aluno (ascendente) para garantir a ordem correta na próxima etapa
-                            createdAt: -1, // Classifica por data de criação em ordem decrescente
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: '$student',
-                            latestOffer: { $first: '$$ROOT' },
-                        },
-                    },
-                    {
-                        $replaceRoot: { newRoot: '$latestOffer' },
-                    },
-                ]);
-            }
-        }
-
-        // Executa a função classOfferList assíncrona para obter a lista de ofertas
-        const classOfferList = await getPresenceList();
-
-        const sucess = (classOfferList || classOfferList.length > 0) ? true : false;
+        console.log('================== presenceList ==================');
+        console.log(presenceList);
+        console.log('================== presenceList ==================');
 
         return res.status(sucess ? 200 : 400).json({
             success: true,
-            message: sucess ? 'Busca do relatório concluído com sucesso' : 'Busca do relatório falhou',
-            items: classOfferList || [],
-        })
+            message: sucess ? 'Busca da lista de presença concluída com sucesso' : 'Busca da lista de presença falhou',
+            items: presenceList || [],
+        });
 
     } catch (error) {
         return res.status(404).json({
@@ -288,4 +133,50 @@ export async function getPresenceListByDateOrSubjectId(
             items: [],
         });
     }
+}
+
+export async function getPresenceList(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) {
+    // Verifica se a data é válida
+    const { startDate, endDate } = await checkDateQuery(req, res, next);
+    const subjectId = new mongoose.Types.ObjectId(req.params.subjectId);
+
+    if (!startDate || !endDate) {
+        return res.status(400).json({
+            success: false,
+            message: 'Formato de data inválido',
+            items: [],
+        });
+    }
+
+    try {
+        //PRECISO VER O MOTIVO PELO QUAL ESTÁ ENVIANDO 1 PRECISANDO E MARCANDO 3
+        return await PresenceModel.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate, // Data maior ou igual a startDate
+                        $lte: endDate    // Data menor ou igual a endDate
+                    },
+                    subject: subjectId // Filtrar por subjectId
+                }
+            },
+            // Outros $lookup para outras chaves estrangeiras, se necessário
+        ]).exec();
+
+        await PresenceModel.deleteMany({
+            createdAt: {
+                $gte: new Date(startDate), // Data maior ou igual a startDate
+                $lte: new Date(endDate)    // Data menor ou igual a endDate
+            }
+        });
+
+    } catch (error) {
+        console.error('Erro ao buscar ofertas por data:', error);
+        throw error;
+    }
+
 }

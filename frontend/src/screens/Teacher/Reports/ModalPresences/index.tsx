@@ -1,13 +1,13 @@
 import { ModalLayout } from '../../../../components/ModalLayout'
 import { useState, useEffect, FormEvent, useContext } from 'react'
 import { Report } from '..'
-import { gradesService } from '../../../../services/gradesService'
+import { presencesService } from '../../../../services/presencesService'
 import { ListMobile } from '../../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
 import { useColumns } from './hooks/useColumns'
 import { TableComponent } from '../../../../components/TableComponent'
-import style from './ModalGrades.module.scss'
-import { FormEditGrade } from './FormEditGrade'
+import style from './ModalPresences.module.scss'
+import { FormEditPresence } from './FormEditPresence'
 import { AlertContext } from '../../../../contexts/alertContext'
 import http from '../../../../api/http';
 
@@ -15,12 +15,13 @@ interface Props {
   reportData: Report
   open: boolean
   handleClose: () => void
+  dateFilter: object
 }
 
-export interface Grade {
+export interface Presence {
   _id: string
-  firstGrade: number
-  secondGrade: number
+  firstPresence: number
+  secondPresence: number
   student: {
     name: string
   }
@@ -29,22 +30,24 @@ export interface Grade {
   }
 }
 
-export function ModalGrades({ open, handleClose, reportData }: Props) {
+export function ModalPresences({ open, handleClose, reportData, dateFilter }: Props) {
   const { alertNotifyConfigs, setAlertNotifyConfigs } = useContext(AlertContext)
 
-  const [loadingGetGrades, setLoadingGetGrades] = useState<boolean>(true)
-  const [loadingUpdateGrades, setLoadingUpdateGrade] = useState<boolean>(false)
-  const [editGradeMode, setEditGradeMode] = useState<boolean>(false)
-  const [gradeToEditData, setGradeToEditData] = useState<Grade | null>(null)
-  const [grades, setGrades] = useState<Grade[]>([])
+  const [loadingGetPresences, setLoadingGetPresences] = useState<boolean>(true)
+  const [loadingUpdatePresences, setLoadingUpdatePresence] = useState<boolean>(false)
+  const [editPresenceMode, setEditPresenceMode] = useState<boolean>(false)
+  const [presenceToEditData, setPresenceToEditData] = useState<Presence | null>(null)
+  const [presences, setPresences] = useState<Presence[]>([])
 
-  function getGrades() {
+  function getPresences() {
+    const subjectId = reportData.subject[0]?._id;
+    if (!subjectId) return;
     // BUSCAR VALORES ANTIGOS
-    setLoadingGetGrades(true)
-    gradesService
-      .getAll(reportData._id)
+    setLoadingGetPresences(true)
+    presencesService
+      .getAll(subjectId, dateFilter?.dateQuery)
       .then((res) => {
-        setGrades(res.data.items)
+        setPresences(res.data.items)
       })
       .catch((err) => {
         console.log(
@@ -53,13 +56,13 @@ export function ModalGrades({ open, handleClose, reportData }: Props) {
         )
       })
       .finally(() => {
-        setLoadingGetGrades(false)
+        setLoadingGetPresences(false)
       })
   }
 
-  function handleEditGrades(grade: Grade) {
-    setEditGradeMode(true)
-    setGradeToEditData(grade)
+  function handleEditPresences(presence: Presence) {
+    setEditPresenceMode(true)
+    setPresenceToEditData(presence)
   }
 
   const handleButtonClick = async (item: { _id: any }) => {
@@ -99,30 +102,30 @@ export function ModalGrades({ open, handleClose, reportData }: Props) {
             "createdAt": "2024-03-08T20:25:42.442Z",
             "__v": 0
         },
-        "firstGrade": 62,
-        "secondGrade": 0,
+        "firstPresence": 62,
+        "secondPresence": 0,
         "createdAt": "2024-03-08T20:50:15.903Z",
         "__v": 0
     }
     */
   };
 
-  function onUpdateGrades(event: FormEvent<HTMLFormElement>) {
+  function onUpdatePresences(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!gradeToEditData) return
+    if (!presenceToEditData) return
 
 
     // Adicionando código IMPROVISADO para salvar a nova como se fosse o dinheiro
-    const newGradeToEditData = { ...gradeToEditData }
-    newGradeToEditData.report.tithing = newGradeToEditData.firstGrade;
-    newGradeToEditData.report.offer = newGradeToEditData.secondGrade;
-    newGradeToEditData.firstGrade = 0;
-    newGradeToEditData.secondGrade = 0;
+    const newPresenceToEditData = { ...presenceToEditData }
+    newPresenceToEditData.report.tithing = newPresenceToEditData.firstPresence;
+    newPresenceToEditData.report.offer = newPresenceToEditData.secondPresence;
+    newPresenceToEditData.firstPresence = 0;
+    newPresenceToEditData.secondPresence = 0;
 
-    setLoadingUpdateGrade(true)
-    gradesService
-      .update(newGradeToEditData)
+    setLoadingUpdatePresence(true)
+    presencesService
+      .update(newPresenceToEditData)
       .then(() => {
         setAlertNotifyConfigs({
           ...alertNotifyConfigs,
@@ -130,10 +133,10 @@ export function ModalGrades({ open, handleClose, reportData }: Props) {
           text: 'Valores atualizados com suceso',
           type: 'success',
         })
-        getGrades()
-        setEditGradeMode(false)
+        getPresences()
+        setEditPresenceMode(false)
 
-        handleButtonClick(newGradeToEditData);
+        handleButtonClick(newPresenceToEditData);
       })
       .catch((err) => {
         setAlertNotifyConfigs({
@@ -145,43 +148,43 @@ export function ModalGrades({ open, handleClose, reportData }: Props) {
         })
       })
       .finally(() => {
-        setLoadingUpdateGrade(false)
+        setLoadingUpdatePresence(false)
       })
   }
 
-  const columns = useColumns({ handleEditGrades })
+  const columns = useColumns({ handleEditPresences })
   const fieldsMobile = useFieldsMobile()
 
   useEffect(() => {
-    getGrades()
+    getPresences()
   }, [])
 
   return (
     <ModalLayout
       open={open}
       handleClose={handleClose}
-      title={`Adicionar Ofertas (${reportData.name})`}
-      submitButtonText={editGradeMode ? 'Confirmar' : ''}
-      onSubmit={editGradeMode ? onUpdateGrades : undefined}
-      loading={loadingUpdateGrades}
+      title={`Presenças (${reportData.subjectName}) — ${new Date(dateFilter?.startDate).toLocaleDateString('pt-BR')} ATÉ ${new Date(dateFilter?.endDate).toLocaleDateString('pt-BR')}`}
+      submitButtonText={editPresenceMode ? 'Confirmar' : ''}
+      onSubmit={editPresenceMode ? onUpdatePresences : undefined}
+      loading={loadingUpdatePresences}
     >
-      {editGradeMode && gradeToEditData && (
-        <FormEditGrade
-          gradeToEditData={gradeToEditData}
-          setGradeToEditData={setGradeToEditData}
+      {editPresenceMode && presenceToEditData && (
+        <FormEditPresence
+          presenceToEditData={presenceToEditData}
+          setPresenceToEditData={setPresenceToEditData}
           handleBack={() => {
-            setEditGradeMode(false)
-            setGradeToEditData(null)
+            setEditPresenceMode(false)
+            setPresenceToEditData(null)
           }}
         />
       )}
 
-      {!editGradeMode && (
+      {!editPresenceMode && (
         <>
           <div className={style.viewDesktop}>
             <TableComponent
-              rows={grades}
-              loading={loadingGetGrades}
+              rows={presences}
+              loading={loadingGetPresences}
               columns={columns}
               emptyText="Nenhum aluno cadastrado na turma"
             />
@@ -192,8 +195,8 @@ export function ModalGrades({ open, handleClose, reportData }: Props) {
               emptyText="Nenhum aluno cadastrado na turma"
               itemFields={fieldsMobile}
               collapseItems={columns}
-              items={grades}
-              loading={loadingGetGrades}
+              items={presences}
+              loading={loadingGetPresences}
             />
           </div>
         </>

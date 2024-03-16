@@ -24,7 +24,7 @@
     &.insertStudentsButton {
       color: $blue-color-700;
     }
-    &.showGradesButton {
+    &.showPresencesButton {
       color: $green-color-500;
     }
     &.deleteReportButton {
@@ -79,7 +79,7 @@
           content: "Alunos";
         }
       }
-      &.showGradesButton {
+      &.showPresencesButton {
         background: $green-color-500;
         color: $white-color;
 

@@ -9,7 +9,7 @@ import { ModalAddStudents } from './ModalAddStudents'
 import style from './Reports.module.scss'
 import { ListMobile } from '../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
-import { ModalGrades } from './ModalGrades'
+import { ModalPresences } from './ModalPresences'
 import { FilterDate } from '../../../components/FilterDate'
 import dayjs from 'dayjs'
 
@@ -26,7 +26,13 @@ export function Reports() {
     const startOfToday = dayjs(new Date()).startOf('day').toISOString();
     const endOfToday = dayjs(new Date()).endOf('day').toISOString();
 
-    return `startDate=${startDateResponseFromFilter || startOfToday}&endDate=${endDateResponseFromFilter || endOfToday}`;
+    const dateQuery = `startDate=${startDateResponseFromFilter || startOfToday}&endDate=${endDateResponseFromFilter || endOfToday}`;
+    setDateFilter({
+      startDate,
+      endDate,
+      dateQuery
+    });
+    return dateQuery;
   }
 
   const {
@@ -41,7 +47,7 @@ export function Reports() {
   )
   const [modalAddStudentsOpened, setModalAddStudentsOpened] =
     useState<boolean>(false)
-  const [modalGradesOpened, setModalGradesOpened] = useState<boolean>(false)
+  const [modalPresencesOpened, setModalPresencesOpened] = useState<boolean>(false)
   const [loadingReports, setLoadingReports] = useState<boolean>(true)
   const [formModalOpened, setFormModalOpened] = useState<boolean>(false)
 
@@ -49,6 +55,7 @@ export function Reports() {
   const endOfToday = dayjs(new Date()).endOf('day').toISOString();
   const [startDate, setStartDate] = useState<string>(startOfToday);
   const [endDate, setEndDate] = useState<string>(endOfToday);
+  const [dateFilter, setDateFilter] = useState<object>({});
 
   const [valueTotal, setValueTotal] = useState<number>(0);
 
@@ -59,7 +66,15 @@ export function Reports() {
       .getAll(getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter))
       .then((res) => {
         setReports(res.data.items)
-        const total = res.data.items.pop();
+        const total = {
+          totalTithing: 0,
+          totalOffer: 0
+        };
+
+        res.data.items.forEach(element => {
+          total.totalTithing += element.tithing;
+          total.totalOffer += element.offer;
+        });
         setValueTotal(total);
       })
       .catch((err) => {
@@ -109,15 +124,15 @@ export function Reports() {
     setSelectedReport(report)
   }
 
-  function handleShowGrades(report: Report) {
-    setModalGradesOpened(true)
+  function handleShowPresences(report: Report) {
+    setModalPresencesOpened(true)
     setSelectedReport(report)
   }
 
   const columns = useColumns({
     handleDeleteReport,
     handleAddStudents,
-    handleShowGrades,
+    handleShowPresences,
   })
 
   const fieldsMobile = useFieldsMobile()
@@ -134,18 +149,19 @@ export function Reports() {
             setStartDate(startDateResponseFromFilter)
             setEndDate(endDateResponseFromFilter)
             getReports(startDateResponseFromFilter, endDateResponseFromFilter);
+            getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter);
           }}
       />
 
       <br />
-          {/*JSON.stringify(reports[3].subject[0].students.length)*/}
-          {/*JSON.stringify(reports[0].subject[0].students)*/}
-                    {/*reports['total'].offer*/}
-                    @@@@@@@@ <br />
-                    Oferta total: {valueTotal?.totalOffer || 0}
-                    <br />
-                    Dízimo total: {valueTotal?.totalTithing || 0}
-                    <br />@@@@@@@@
+      {/*JSON.stringify(reports[3].subject[0].students.length)*/}
+      {/*JSON.stringify(reports[0].subject[0].students)*/}
+      {/*reports['total'].offer*/}
+      @@@@@@@@ <br />
+      Oferta total: {valueTotal?.totalTithing || 0}
+      <br />
+      Dízimo total: {valueTotal?.totalOffer || 0}
+      <br />@@@@@@@@
 
       <br />
       (deve poder saber quem teve mais presenças)
@@ -195,12 +211,13 @@ export function Reports() {
         />
       )}
 
-      {modalGradesOpened && selectedReport && (
-        <ModalGrades
+      {modalPresencesOpened && selectedReport && (
+        <ModalPresences
           reportData={selectedReport}
-          open={modalGradesOpened}
+          open={modalPresencesOpened}
+          dateFilter={dateFilter}
           handleClose={() => {
-            setModalGradesOpened(false)
+            setModalPresencesOpened(false)
             setSelectedReport(undefined)
           }}
         />

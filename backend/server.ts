@@ -7,9 +7,9 @@ import { routes } from './src/shared/infra/http/routes'
 import './src/shared/containers'
 import { Mongoose } from 'mongoose'
 import { handleError } from './src/shared/infra/http/middlewares/handleError'
-import { sendPresence, getPresenceListByDate } from './src/shared/infra/http/middlewares/presenceCRUD';
+import { sendPresence, getPresenceByDateOrSubjectId } from './src/shared/infra/http/middlewares/presenceCRUD';
 import { sendClassOffer, getClassOfferListByDateOrTeacherId, getClassOffer } from './src/shared/infra/http/middlewares/classOfferCRUD';
-import { getReportByDateOrTeacherId, getReportBySubjectId } from './src/shared/infra/http/middlewares/reportCRUD';
+import { getReportByDateOrTeacherId, getReportBySubjectId,getReportPresenceByDateAndSubjectId } from './src/shared/infra/http/middlewares/reportCRUD';
 
 interface CustomExpress extends Express {
   mongo?: Mongoose
@@ -40,21 +40,24 @@ app.post('/presence', sendPresence, async (req: Request, res: Response) => {
 })
 
 
-app.get('/presence/:teacherId', getPresenceListByDate, async (req: Request, res: Response) => {
+app.get('/presence/subject/:subjectId', getPresenceByDateOrSubjectId, async (req: Request, res: Response) => {
   // TRABALHANDO4
   // middleware
 })
 
-app.get('/report/:subjectId', getReportBySubjectId, async (req: Request, res: Response) => {
+app.get('/report/subject/:subjectId', getReportBySubjectId, async (req: Request, res: Response) => {
   // TRABALHANDO4
   // middleware
 })
 
-app.get('/report', getReportByDateOrTeacherId, async (req: Request, res: Response) => {
+app.get('/report/class-offer', getReportByDateOrTeacherId, async (req: Request, res: Response) => {
   // TRABALHANDO4
   // middleware
 })
-
+app.get('/report/presence/subject/:subjectId', getReportPresenceByDateAndSubjectId, async (req: Request, res: Response) => {
+  // TRABALHANDO4
+  // middleware
+})
 
 app.get('/class-offer', getClassOffer, async (req: Request, res: Response) => {
   // TRABALHANDO4
