@@ -1,6 +1,6 @@
 import {
-  faGraduationCap,
-  faDollarSign,
+  faExternalLinkAlt,
+  faList,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import { Report } from '..'
@@ -71,7 +71,7 @@ DAQUI VEM O ID DA TURMA
               className={style.insertStudentsButton}
               type="button"
             >
-              <FontAwesomeIcon icon={faGraduationCap} className={style.icon} />
+              <FontAwesomeIcon icon={faExternalLinkAlt} className={style.icon} />
             </button>
 
             <button
@@ -81,7 +81,7 @@ DAQUI VEM O ID DA TURMA
               className={style.showPresencesButton}
               type="button"
             >
-              <FontAwesomeIcon icon={faDollarSign} className={style.icon} />
+              <FontAwesomeIcon icon={faList} className={style.icon} />
             </button>
 
             <button

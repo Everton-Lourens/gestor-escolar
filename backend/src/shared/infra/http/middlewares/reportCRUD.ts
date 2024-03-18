@@ -479,8 +479,6 @@ export async function getReportPresenceByDateAndSubjectId(
 
         reportList = [
             ...reportList,
-            ...reportList,
-            ...reportList,
         ];
 
         // Cria um mapa para armazenar as contagens de presença de cada aluno

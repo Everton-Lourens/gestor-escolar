@@ -44,7 +44,7 @@ app.get('/presence/subject/:subjectId', getPresenceByDateOrSubjectId, async (req
   // TRABALHANDO4
   // middleware
 })
-
+ 
 app.get('/report/subject/:subjectId', getReportBySubjectId, async (req: Request, res: Response) => {
   // TRABALHANDO4
   // middleware
@@ -54,6 +54,7 @@ app.get('/report/class-offer', getReportByDateOrTeacherId, async (req: Request, 
   // TRABALHANDO4
   // middleware
 })
+
 app.get('/report/presence/subject/:subjectId', getReportPresenceByDateAndSubjectId, async (req: Request, res: Response) => {
   // TRABALHANDO4
   // middleware

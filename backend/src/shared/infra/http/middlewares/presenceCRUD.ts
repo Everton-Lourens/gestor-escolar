@@ -153,8 +153,8 @@ export async function getPresenceList(
     }
 
     try {
-        //PRECISO VER O MOTIVO PELO QUAL ESTÁ ENVIANDO 1 PRECISANDO E MARCANDO 3
-        return await PresenceModel.aggregate([
+
+        const presentList = await PresenceModel.aggregate([
             {
                 $match: {
                     createdAt: {
@@ -167,6 +167,10 @@ export async function getPresenceList(
             // Outros $lookup para outras chaves estrangeiras, se necessário
         ]).exec();
 
+        return await deleteDuplicatePresencesAndGetUnique(presentList);
+
+        return;
+        return;
         await PresenceModel.deleteMany({
             createdAt: {
                 $gte: new Date(startDate), // Data maior ou igual a startDate
@@ -179,4 +183,60 @@ export async function getPresenceList(
         throw error;
     }
 
+}
+
+
+
+// Função para eliminar presenças duplicadas, mantendo apenas a mais recente
+async function deleteDuplicatePresencesAndGetUnique(presentList) {
+    try {
+        // Mapear presenças únicas por pessoa e dia
+        const uniquePresencesMap = new Map();
+
+        // Lista de IDs das presenças a serem excluídas
+        const presenceIdsToDelete = [];
+
+        for (const presence of presentList) {
+            const key = `${presence.nameStudent}_${presence.createdAt.toDateString()}`;
+
+            // Se já existir uma presença para esta pessoa neste dia
+            if (uniquePresencesMap.has(key)) {
+                const existingPresence = uniquePresencesMap.get(key);
+
+                // Verificar se a presença atual é mais recente
+                if (presence.createdAt > existingPresence.createdAt) {
+                    // Se sim, substituir pela presença atual
+                    uniquePresencesMap.set(key, presence);
+                    // Adicionar a presença anterior à lista de IDs a serem excluídos
+                    presenceIdsToDelete.push(existingPresence._id);
+                } else {
+                    // Adicionar a presença atual à lista de IDs a serem excluídos
+                    presenceIdsToDelete.push(presence._id);
+                }
+            } else {
+                // Se não existir uma presença para esta pessoa neste dia, adicionar à lista
+                uniquePresencesMap.set(key, presence);
+            }
+
+            // Se a presença for falsa, adicionar à lista de IDs a serem excluídos
+            if (presence.presence === false) {
+                presenceIdsToDelete.push(presence._id);
+            }
+        }
+
+        // Obter presenças únicas a partir do mapa
+        const uniquePresences = Array.from(uniquePresencesMap.values());
+
+        // Excluir presenças duplicadas e presenças com presence: false
+        await PresenceModel.deleteMany({
+            _id: { $in: presenceIdsToDelete }
+        });
+
+        console.log('Presenças duplicadas e presenças com presence: false excluídas com sucesso.');
+
+        return uniquePresences;
+    } catch (error) {
+        console.error('Erro ao excluir presenças duplicadas:', error);
+        throw error;
+    }
 }
