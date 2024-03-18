@@ -14,6 +14,7 @@ import { FilterDate } from '../../../components/FilterDate'
 import dayjs from 'dayjs'
 
 export interface Report {
+  subject: any
   _id: string
   name: string
   reports: string[]
@@ -30,7 +31,7 @@ export function Reports() {
     setDateFilter({
       startDate,
       endDate,
-      dateQuery
+      dateQuery,
     });
     return dateQuery;
   }
@@ -66,12 +67,12 @@ export function Reports() {
       .getAll(getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter))
       .then((res) => {
         setReports(res.data.items)
-        const total = {
-          totalTithing: 0,
-          totalOffer: 0
-        };
 
-        res.data.items.forEach(element => {
+        let total: {
+          totalTithing: number;
+          totalOffer: number;
+        }
+        res.data.items.forEach((element: { tithing: number; offer: number }) => {
           total.totalTithing += element.tithing;
           total.totalOffer += element.offer;
         });
@@ -146,8 +147,8 @@ export function Reports() {
       <FilterDate
         onClickFunction={
           function (startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
-            setStartDate(startDateResponseFromFilter)
-            setEndDate(endDateResponseFromFilter)
+            setStartDate(startDateResponseFromFilter);
+            setEndDate(endDateResponseFromFilter);
             getReports(startDateResponseFromFilter, endDateResponseFromFilter);
             getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter);
           }}

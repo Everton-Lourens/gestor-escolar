@@ -233,6 +233,13 @@ async function deleteDuplicatePresencesAndGetUnique(presentList) {
             _id: { $in: presenceIdsToDelete }
         });
 
+        // Ordena a array de presenças com base na quantidade de presenças (quantidade de vezes em que presence é true)
+        uniquePresences.sort((a, b) => {
+            const countA = uniquePresences.filter(item => item.student.toString() === a.student.toString() && item.presence === true).length;
+            const countB = uniquePresences.filter(item => item.student.toString() === b.student.toString() && item.presence === true).length;
+            return countB - countA; // Ordena em ordem decrescente
+        });
+
         return uniquePresences;
     } catch (error) {
         console.error('Erro ao excluir presenças duplicadas:', error);
