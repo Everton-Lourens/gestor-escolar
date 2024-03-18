@@ -142,6 +142,7 @@ export async function getPresenceList(
 ) {
     // Verifica se a data é válida
     const { startDate, endDate } = await checkDateQuery(req, res, next);
+
     const subjectId = new mongoose.Types.ObjectId(req.params.subjectId);
 
     if (!startDate || !endDate) {
@@ -231,8 +232,6 @@ async function deleteDuplicatePresencesAndGetUnique(presentList) {
         await PresenceModel.deleteMany({
             _id: { $in: presenceIdsToDelete }
         });
-
-        console.log('Presenças duplicadas e presenças com presence: false excluídas com sucesso.');
 
         return uniquePresences;
     } catch (error) {

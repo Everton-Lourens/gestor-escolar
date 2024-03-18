@@ -84,15 +84,6 @@ DAQUI VEM O ID DA TURMA
               <FontAwesomeIcon icon={faList} className={style.icon} />
             </button>
 
-            <button
-              onClick={() => {
-                handleDeleteReport(params.data)
-              }}
-              className={style.deleteReportButton}
-              type="button"
-            >
-              <FontAwesomeIcon icon={faTrash} className={style.icon} />
-            </button>
           </div>
         )
       },

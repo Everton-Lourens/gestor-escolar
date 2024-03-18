@@ -87,14 +87,6 @@
           content: "Presenças";
         }
       }
-      &.deleteReportButton {
-        background: $red-color-500;
-        color: $white-color;
-
-        &::after {
-          content: "Deletar Turma";
-        }
-      }
     }
   }
 }

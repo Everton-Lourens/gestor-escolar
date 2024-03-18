@@ -247,9 +247,6 @@ export async function getReportByDateOrTeacherId(
                     return acc;
                   }, {}));
 
-console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-console.log(reportList);
-console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
 /*
                 reportList.push({
                     totalTithing: tithing,
@@ -506,11 +503,6 @@ export async function getReportPresenceByDateAndSubjectId(
             return array.findIndex(o => o.nameStudent === object.nameStudent) === index;
         });
 
-        // Agora cada objeto no reportList contém a contagem de presenças do respectivo aluno
-        console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-        console.log(reportList);
-        console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-       
        /*
         let presence: number = 0;
         let subject: { [key: string]: any } = {};

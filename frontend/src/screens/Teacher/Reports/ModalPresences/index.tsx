@@ -19,15 +19,15 @@ interface Props {
 }
 
 export interface Presence {
-  _id: string
-  firstPresence: number
-  secondPresence: number
-  student: {
-    name: string
-  }
-  report: {
-    name: string
-  }
+  _id: string;
+  subjectName: string;
+  nameStudent: string;
+  presence: boolean;
+  teacher: string; // Assume-se que o tipo ObjectId seja representado como string
+  student: string; // Assume-se que o tipo ObjectId seja representado como string
+  subject: string; // Assume-se que o tipo ObjectId seja representado como string
+  createdAt: string; // Assume-se que a data seja representada como string ISO 8601
+  __v: number;
 }
 
 export function ModalPresences({ open, handleClose, reportData, dateFilter }: Props) {
@@ -38,16 +38,18 @@ export function ModalPresences({ open, handleClose, reportData, dateFilter }: Pr
   const [editPresenceMode, setEditPresenceMode] = useState<boolean>(false)
   const [presenceToEditData, setPresenceToEditData] = useState<Presence | null>(null)
   const [presences, setPresences] = useState<Presence[]>([])
+  const [showDateFilter, setShowDateFilter] = useState<object>({})
 
   function getPresences() {
-    const subjectId = reportData.subject[0]?._id;
+    const subjectId: string = reportData?.subject[0]?._id;
     if (!subjectId) return;
     // BUSCAR VALORES ANTIGOS
     setLoadingGetPresences(true)
     presencesService
       .getAll(subjectId, dateFilter?.dateQuery)
       .then((res) => {
-        setPresences(res.data.items)
+        setPresences(res.data.items);
+        setShowDateFilter(dateFilter);
       })
       .catch((err) => {
         console.log(
@@ -163,7 +165,7 @@ export function ModalPresences({ open, handleClose, reportData, dateFilter }: Pr
     <ModalLayout
       open={open}
       handleClose={handleClose}
-      title={`Presenças (${reportData.subjectName}) — ${new Date(dateFilter?.startDate).toLocaleDateString('pt-BR')} ATÉ ${new Date(dateFilter?.endDate).toLocaleDateString('pt-BR')}`}
+      title={`Presenças (${reportData.subjectName}) — ${new Date(showDateFilter?.startDate).toLocaleDateString('pt-BR')} ATÉ ${new Date(showDateFilter?.endDate).toLocaleDateString('pt-BR')}`}
       submitButtonText={editPresenceMode ? 'Confirmar' : ''}
       onSubmit={editPresenceMode ? onUpdatePresences : undefined}
       loading={loadingUpdatePresences}
