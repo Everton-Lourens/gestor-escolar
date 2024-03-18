@@ -128,6 +128,7 @@ export function Reports() {
   function handleShowPresences(report: Report) {
     setModalPresencesOpened(true)
     setSelectedReport(report)
+    getDateQuery(startDate, endDate);
   }
 
   const columns = useColumns({
