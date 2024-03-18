@@ -67,11 +67,11 @@ export function Reports() {
       .getAll(getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter))
       .then((res) => {
         setReports(res.data.items)
+        const total = {
+          totalTithing: 0,
+          totalOffer: 0
+        };
 
-        let total: {
-          totalTithing: number;
-          totalOffer: number;
-        }
         res.data.items.forEach((element: { tithing: number; offer: number }) => {
           total.totalTithing += element.tithing;
           total.totalOffer += element.offer;
@@ -166,9 +166,11 @@ export function Reports() {
       <br />@@@@@@@@
 
       <br />
-      (deve poder saber quem teve mais presenças)
       <br />
-      (deve poder saber quem teve mais dizimos (talvez))
+      (Fazer com que mostre a porcentagem apenas se for o início e o fim sendo a mesma data, então pesquisa as presenças atuais em uma função "count" e coloca o json APENAS SE FOR OS DOIS NA MESMA DATA)
+      <br />
+      (deve poder saber quem teve mais presenças e porcentagem)
+      <br />
       <br />
       criar um botão para ir ver o relatório individual onde mostra quem deu mais dizimos, presenças, etc.
 
