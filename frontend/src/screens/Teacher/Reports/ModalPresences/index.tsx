@@ -15,7 +15,11 @@ interface Props {
   reportData: Report
   open: boolean
   handleClose: () => void
-  dateFilter: object
+  dateFilter: {
+    dateQuery: string,
+    startDate: string,
+    endDate: string
+  }
 }
 
 export interface Presence {
