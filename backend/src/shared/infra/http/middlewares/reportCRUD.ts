@@ -187,6 +187,7 @@ export async function getReportByDateOrTeacherId(
 
         const getReportList = async () => {
             try {
+                return await getPresenceList(req, res, next);
                 return await getClassOfferList(req, res, next);
                 return {
                     classOffer: await getClassOfferList(req, res, next),

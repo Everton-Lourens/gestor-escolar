@@ -139,7 +139,7 @@ export async function getPresenceList(
     // Verifica se a data é válida
     const { startDate, endDate } = await checkDateQuery(req, res, next);
 
-    const subjectId = new mongoose.Types.ObjectId(req.params.subjectId);
+    //@@@@@@@@@@const subjectId = new mongoose.Types.ObjectId(req.params.subjectId);
 
     if (!startDate || !endDate) {
         return res.status(400).json({
@@ -158,11 +158,42 @@ export async function getPresenceList(
                         $gte: startDate, // Data maior ou igual a startDate
                         $lte: endDate    // Data menor ou igual a endDate
                     },
-                    subject: subjectId // Filtrar por subjectId
+                    //@@@@@@@@@subject: subjectId // Filtrar por subjectId
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subjects', // Nome da coleção a ser populada
+                    localField: 'subject',
+                    foreignField: '_id',
+                    as: 'subject'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Nome da coleção a ser populada
+                    localField: 'teacher',
+                    foreignField: '_id',
+                    as: 'teacher'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Nome da coleção a ser populada
+                    localField: 'student',
+                    foreignField: '_id',
+                    as: 'student'
                 }
             },
             // Outros $lookup para outras chaves estrangeiras, se necessário
         ]).exec();
+
+
+        const teste = await deleteDuplicatePresencesAndGetUnique(presentList);
+        console.log('========================');
+        console.log(teste);
+        console.log('========================');
+        return teste
 
         return await deleteDuplicatePresencesAndGetUnique(presentList);
 
