@@ -166,6 +166,8 @@ export function Reports() {
       <br />@@@@@@@@
 
       <br />
+      CASO NÃO TENHA OFERTADO NADA NO DIA, NÃO RETORNA.. ENTÃO PUXA TODOS OS DADOS. TEM QUE INFORMAR QUE OS DADOS SÃO DESDO INÍCIO OU FAZER UM JOIN DE OFFER E PRESENCE
+      <br />
       <br />
       (Fazer com que mostre a porcentagem apenas se for o início e o fim sendo a mesma data, então pesquisa as presenças atuais em uma função "count" e coloca o json APENAS SE FOR OS DOIS NA MESMA DATA)
       <br />
