@@ -61,7 +61,19 @@ DAQUI VEM O ID DA TURMA
         */
         return (
           <div className={style.actionButtonsContainer}>
+
             <button
+              onClick={() => {
+                handleShowPresences(params.data)
+              }}
+              className={style.showPresencesButton}
+              type="button"
+            >
+              <FontAwesomeIcon icon={faList} className={style.icon} />
+            </button>
+
+            <button
+            disabled={true}
               onClick={() => {
                 window.location.href = `/teacher/reports/${params.data._id}`
                 return;
@@ -72,16 +84,6 @@ DAQUI VEM O ID DA TURMA
               type="button"
             >
               <FontAwesomeIcon icon={faExternalLinkAlt} className={style.icon} />
-            </button>
-
-            <button
-              onClick={() => {
-                handleShowPresences(params.data)
-              }}
-              className={style.showPresencesButton}
-              type="button"
-            >
-              <FontAwesomeIcon icon={faList} className={style.icon} />
             </button>
 
           </div>
