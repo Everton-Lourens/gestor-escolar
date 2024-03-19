@@ -28,19 +28,29 @@ export function TeacherHomeScreen() {
       },
     },
     {
+      image: timetableImage,
+      title: 'Relatório',
+      alt: 'Botão de relatório',
+      onClickCallback: () => {
+        router.push('/teacher/reports')
+      }
+    },
+    /*
+    {
+      image: timetableImage,
+      alt: 'Botão de faltas',
+      title: 'Faltas',
+      disabled: true,
+      onClickCallback: () => { },
+    },
+    */
+    {
       image: warningImage,
       alt: 'Botão de dvertências',
       title: 'Advertências',
       onClickCallback: () => {
         router.push('/teacher/studentsWarnings')
       },
-    },
-    {
-      image: timetableImage,
-      alt: 'Botão de faltas',
-      title: 'Faltas',
-      disabled: true,
-      onClickCallback: () => {},
     },
   ]
 

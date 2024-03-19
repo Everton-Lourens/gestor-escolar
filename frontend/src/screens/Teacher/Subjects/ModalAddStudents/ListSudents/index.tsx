@@ -73,7 +73,7 @@ export function ListStudent({
         ...prevConfigs,
         [item._id]: {
           text: isPrecence ? 'FALTA' : 'PRESENTE',
-          color: isPrecence ? 'secondary' : 'primary', // ou qualquer outra cor desejada
+          color: isPrecence ? 'error' : 'primary', // ou qualquer outra cor desejada
         },
       }));
       setAlertNotifyConfigs({
@@ -91,7 +91,7 @@ export function ListStudent({
       {!loading &&
         students?.length > 0 &&
         students?.map((item: any) => {
-          const buttonConfig = buttonConfigs[item._id] || { text: 'FALTA', color: 'secondary' };
+          const buttonConfig = buttonConfigs[item._id] || { text: 'MARCAR', color: 'secondary' };
 
           return (
             <div
