@@ -231,7 +231,7 @@ export async function getClassOfferList(
         });
     }
     try {
-        return await OfferModel.aggregate([
+        let offerList = await OfferModel.aggregate([
             {
                 $match: {
                     createdAt: {
@@ -266,6 +266,38 @@ export async function getClassOfferList(
             },
             // Outros $lookup para outras chaves estrangeiras, se necessário
         ]).exec();
+
+        if (offerList.length === 0) {
+            offerList = await OfferModel.aggregate([
+                {
+                    $lookup: {
+                        from: 'subjects', // Nome da coleção a ser populada
+                        localField: 'subject',
+                        foreignField: '_id',
+                        as: 'subject'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users', // Nome da coleção a ser populada
+                        localField: 'teacher',
+                        foreignField: '_id',
+                        as: 'teacher'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users', // Nome da coleção a ser populada
+                        localField: 'student',
+                        foreignField: '_id',
+                        as: 'student'
+                    }
+                },
+                // Outros $lookup para outras chaves estrangeiras, se necessário
+            ]).exec();
+        }
+
+        return offerList;
 
         await OfferModel.deleteMany({
             createdAt: {

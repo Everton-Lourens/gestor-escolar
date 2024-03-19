@@ -207,7 +207,6 @@ export async function getReportByDateOrTeacherId(
 
         try {
             if (Array.isArray(reportList)) {
-                const teste = reportList
 
                 reportList.forEach((element, index) => {
                     tithing += element?.tithing || 0;

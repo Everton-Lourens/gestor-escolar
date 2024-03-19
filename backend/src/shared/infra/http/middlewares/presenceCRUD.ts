@@ -116,10 +116,6 @@ export async function getPresenceByDateOrSubjectId(
 
         const sucess = (Array.isArray(presenceList) && presenceList.length > 0) ? true : false;
 
-        console.log('================== presenceList ==================');
-        console.log(presenceList);
-        console.log('================== presenceList ==================');
-
         return res.status(sucess ? 200 : 400).json({
             success: true,
             message: sucess ? 'Busca da lista de presença concluída com sucesso' : 'Busca da lista de presença falhou',
