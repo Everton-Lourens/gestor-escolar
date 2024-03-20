@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 import { getClassOfferList } from './classOfferCRUD';
-import { getPresenceList } from './presenceCRUD';
+import { getAllPresenceList, getPresenceList } from './presenceCRUD';
 // Middleware para enviar dados para o mongo
 
 export async function sendClassOffer(
@@ -187,7 +187,7 @@ export async function getReportByDateOrTeacherId(
 
         const getReportList = async () => {
             try {
-                return await getPresenceList(req, res, next);
+                return await getAllPresenceList(req, res, next);
                 return await getClassOfferList(req, res, next);
                 return {
                     classOffer: await getClassOfferList(req, res, next),
@@ -199,7 +199,7 @@ export async function getReportByDateOrTeacherId(
             }
         }
 
-        // Executa a função reportList assíncrona para obter a lista de ofertas
+
         let reportList = await getReportList();
 
         let tithing: number = 0;
@@ -220,55 +220,28 @@ export async function getReportByDateOrTeacherId(
                     reportList[index].studentName = element?.student[0]?.name || '';
                     reportList[index].subjectName = element?.subject[0]?.name || '';
                     reportList[index].countStudents = element?.subject[0]?.students.length;
-/*
-                    if (!!subject[element?.subject[0]?.subjectName]) {
-                        reportList[subject[element?.subject[0]?.subjectName].currentIndex].countTithing += element?.tithing || 0;
-                        reportList[subject[element?.subject[0]?.subjectName].currentIndex].countOffer += element?.offer || 0;
-                    } else {
-                        subject[element?.subject[0]?.subjectName] = {
-                            currentIndex: index,
-                            countTithing: element?.tithing || 0,
-                            countOffer: element?.offer || 0
-                        };
-                        reportList[index].countTithing = element?.tithing || 0;
-                        reportList[index].countOffer = element?.offer || 0;
-                    }
-                    */
                 });
 
                 reportList = Object.values(reportList.reduce((acc, cur) => {
                     const key = cur.subjectName;
                     if (!acc[key]) {
-                      acc[key] = { ...cur };
+                        acc[key] = { ...cur };
                     } else {
-                      acc[key].tithing += cur.tithing;
-                      acc[key].offer += cur.offer;
+                        acc[key].tithing += cur.tithing;
+                        acc[key].offer += cur.offer;
                     }
                     return acc;
-                  }, {}));
-
-/*
-                reportList.push({
-                    totalTithing: tithing,
-                    totalOffer: offer,
-                });
-
-                // Filtering objects with the same value for the key 'subjectName'
-                reportList = reportList.filter((object, index, array) => {
-                    return array.findIndex(o => o.subjectName === object.subjectName) === index;
-                });
-                */
-
+                }, {}));
             }
         } catch (error) {
             console.log(error);
         }
 
-        /*
-        console.log('--reportList--')
+  
+        console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
         console.log(reportList)
-        console.log('--reportList--')
-        */
+         console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+
         return res.status(200).json({
             success: true,
             message: 'Busca do relatório concluído com sucesso',
@@ -435,102 +408,6 @@ export async function getReportBySubjectId(
         console.log(reportList)
         console.log('--reportList--')
         */
-        return res.status(200).json({
-            success: true,
-            message: 'Busca do relatório concluído com sucesso',
-            items: reportList || [],
-        })
-
-    } catch (error) {
-        return res.status(404).json({
-            success: false,
-            message: `Erro ao buscar ofertas das turma pela data: "${error}"`,
-            items: [],
-        });
-    }
-}
-
-
-export async function getReportPresenceByDateAndSubjectId(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
-    try {
-
-        const getReportList = async () => {
-            try {
-                return await getPresenceList(req, res, next);
-                return {
-                    classOffer: await getPresenceList(req, res, next),
-                    presence: await getPresenceList(req, res, next),
-                };
-            } catch (e) {
-                console.error(e);
-                return null;
-            }
-        }
-
-        // Executa a função reportList assíncrona para obter a lista de ofertas
-        let reportList = await getReportList();
-
-        reportList = [
-            ...reportList,
-        ];
-
-        // Cria um mapa para armazenar as contagens de presença de cada aluno
-        const presenceCountMap = {};
-
-        // Itera sobre o array reportList para contabilizar as presenças de cada aluno
-        reportList.forEach(report => {
-            // Verifica se o aluno já está no mapa, se não estiver, adiciona com contagem inicial zero
-            if (!presenceCountMap.hasOwnProperty(report.nameStudent)) {
-                presenceCountMap[report.nameStudent] = 0;
-            }
-            // Incrementa a contagem se a presença for verdadeira
-            if (report.presence === true) {
-                presenceCountMap[report.nameStudent]++;
-            }
-        });
-
-        // Atualiza cada objeto no reportList com a contagem de presença correspondente
-        reportList.forEach(report => {
-            report.presenceCount = presenceCountMap[report.nameStudent];
-        });
-
-        // Aqui você pode remover os objetos duplicados com base no nome do aluno, se necessário
-        reportList = reportList.filter((object, index, array) => {
-            return array.findIndex(o => o.nameStudent === object.nameStudent) === index;
-        });
-
-       /*
-        let presence: number = 0;
-        let subject: { [key: string]: any } = {};
-
-        try {
-            if (Array.isArray(reportList)) {
-
-                reportList.forEach((element, index) => {
-                    presence += element?.presence ? 1 : 0;
-                });
-
-                reportList.push({
-                    countPresence: presence,
-                });
-                console.log('--reportList--')
-                console.log(reportList)
-                console.log('--reportList--')
-                // Filtering objects with the same value for the key 'nameStudent'
-                reportList = reportList.filter((object, index, array) => {
-                    return array.findIndex(o => o.nameStudent === object.nameStudent) === index;
-                });
-
-            }
-        } catch (error) {
-            console.log(error);
-        }
-*/
-
         return res.status(200).json({
             success: true,
             message: 'Busca do relatório concluído com sucesso',

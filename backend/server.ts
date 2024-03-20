@@ -9,7 +9,8 @@ import { Mongoose } from 'mongoose'
 import { handleError } from './src/shared/infra/http/middlewares/handleError'
 import { sendPresence, getPresenceByDateOrSubjectId } from './src/shared/infra/http/middlewares/presenceCRUD';
 import { sendClassOffer, getClassOfferListByDateOrTeacherId, getClassOffer } from './src/shared/infra/http/middlewares/classOfferCRUD';
-import { getReportByDateOrTeacherId, getReportBySubjectId,getReportPresenceByDateAndSubjectId } from './src/shared/infra/http/middlewares/reportCRUD';
+import { getReportByDateOrTeacherId, getReportBySubjectId } from './src/shared/infra/http/middlewares/reportCRUD';
+import { getPresenceList } from './src/shared/infra/http/middlewares/presenceCRUD';
 
 interface CustomExpress extends Express {
   mongo?: Mongoose
@@ -55,7 +56,7 @@ app.get('/report/class-offer', getReportByDateOrTeacherId, async (req: Request, 
   // middleware
 })
 
-app.get('/report/presence/subject/:subjectId', getReportPresenceByDateAndSubjectId, async (req: Request, res: Response) => {
+app.get('/report/presence/subject/:subjectId', getPresenceList, async (req: Request, res: Response) => {
   // TRABALHANDO4
   // middleware
 })

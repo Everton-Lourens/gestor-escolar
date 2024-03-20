@@ -64,7 +64,7 @@ export async function sendPresence(
             nameStudent: name,
             subject: subjectId,
             subjectName,
-        })
+        });
 
         // Salvando a nova instância no banco de dados.
         await newPresence.save();
@@ -130,28 +130,142 @@ export async function getPresenceByDateOrSubjectId(
         });
     }
 }
-
 export async function getPresenceList(
     req: Request,
     res: Response,
     next: NextFunction,
 ) {
-    // Verifica se a data é válida
-    const { startDate, endDate } = await checkDateQuery(req, res, next);
+    try {
 
-    //@@@@@@@@@@const subjectId = new mongoose.Types.ObjectId(req.params.subjectId);
+        // Executa a função reportList assíncrona para obter a lista de ofertas
+        let reportList = await getAllPresenceList(req, res, next);
+        console.log('2122222222');
+        console.log(reportList);
+        console.log('2122222222');
 
-    if (!startDate || !endDate) {
-        return res.status(400).json({
+        reportList = [
+            ...reportList,
+        ];
+
+        // Cria um mapa para armazenar as contagens de presença de cada aluno
+        const presenceCountMap = {};
+
+        // Itera sobre o array reportList para contabilizar as presenças de cada aluno
+        reportList.forEach(report => {
+            // Verifica se o aluno já está no mapa, se não estiver, adiciona com contagem inicial zero
+            if (!presenceCountMap.hasOwnProperty(report.nameStudent)) {
+                presenceCountMap[report.nameStudent] = 0;
+            }
+            // Incrementa a contagem se a presença for verdadeira
+            if (report.presence === true) {
+                presenceCountMap[report.nameStudent]++;
+            }
+        });
+
+        // Atualiza cada objeto no reportList com a contagem de presença correspondente
+        reportList.forEach(report => {
+            report.presenceCount = presenceCountMap[report.nameStudent];
+        });
+
+        // Aqui você pode remover os objetos duplicados com base no nome do aluno, se necessário
+        reportList = reportList.filter((object, index, array) => {
+            return array.findIndex(o => o.nameStudent === object.nameStudent) === index;
+        });
+
+        /*
+         let presence: number = 0;
+         let subject: { [key: string]: any } = {};
+ 
+         try {
+             if (Array.isArray(reportList)) {
+ 
+                 reportList.forEach((element, index) => {
+                     presence += element?.presence ? 1 : 0;
+                 });
+ 
+                 reportList.push({
+                     countPresence: presence,
+                 });
+                 console.log('--reportList--')
+                 console.log(reportList)
+                 console.log('--reportList--')
+                 // Filtering objects with the same value for the key 'nameStudent'
+                 reportList = reportList.filter((object, index, array) => {
+                     return array.findIndex(o => o.nameStudent === object.nameStudent) === index;
+                 });
+ 
+             }
+         } catch (error) {
+             console.log(error);
+         }
+ */
+
+        return res.status(200).json({
+            success: true,
+            message: 'Busca do relatório concluído com sucesso',
+            items: reportList || [],
+        })
+
+    } catch (error) {
+        return res.status(404).json({
             success: false,
-            message: 'Formato de data inválido',
+            message: `Erro ao buscar ofertas das turma pela data: "${error}"`,
             items: [],
         });
     }
 
-    try {
+}
 
-        const presentList = await PresenceModel.aggregate([
+
+export async function getAllPresenceList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    // Verifica se a data é válida
+    const { startDate, endDate } = await checkDateQuery(req, res, next);
+
+    const subjectId = req.params?.subjectId || null;
+
+    if (subjectId) {
+        return await PresenceModel.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate, // Data maior ou igual a startDate
+                        $lte: endDate    // Data menor ou igual a endDate
+                    },
+                    subject: new mongoose.Types.ObjectId(subjectId)// Filtrar por subjectId
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subjects', // Nome da coleção a ser populada
+                    localField: 'subject',
+                    foreignField: '_id',
+                    as: 'subject'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Nome da coleção a ser populada
+                    localField: 'teacher',
+                    foreignField: '_id',
+                    as: 'teacher'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Nome da coleção a ser populada
+                    localField: 'student',
+                    foreignField: '_id',
+                    as: 'student'
+                }
+            },
+            // Outros $lookup para outras chaves estrangeiras, se necessário
+        ]).exec();
+    } else {
+        return await PresenceModel.aggregate([
             {
                 $match: {
                     createdAt: {
@@ -187,32 +301,8 @@ export async function getPresenceList(
             },
             // Outros $lookup para outras chaves estrangeiras, se necessário
         ]).exec();
-
-
-        const teste = await deleteDuplicatePresencesAndGetUnique(presentList);
-        console.log('========================');
-        console.log(teste);
-        console.log('========================');
-        return teste
-
-        return await deleteDuplicatePresencesAndGetUnique(presentList);
-
-        return;
-        return;
-        await PresenceModel.deleteMany({
-            createdAt: {
-                $gte: new Date(startDate), // Data maior ou igual a startDate
-                $lte: new Date(endDate)    // Data menor ou igual a endDate
-            }
-        });
-
-    } catch (error) {
-        console.error('Erro ao buscar ofertas por data:', error);
-        throw error;
     }
-
 }
-
 
 
 // Função para eliminar presenças duplicadas, mantendo apenas a mais recente
