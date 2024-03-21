@@ -4,7 +4,7 @@
   "description": "Sistema de gestão escolar",
   "main": "server.js",
   "scripts": {
-    "start": "ts-node --transpile-only server.ts",
+    "start": "server.ts",
     "start2": "ts-node-dev --transpile-only server.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts,.js",
