@@ -25,7 +25,6 @@ export async function checkDateQuery(
         if (isNaN(startDateFilter.getTime()) || isNaN(endDateFilter.getTime())) {
             return { startDate: null, endDate: null };
         }
-        console.log({ startDate: startDateFilter, endDate: endDateFilter });
         return { startDate: startDateFilter, endDate: endDateFilter };
 
     } catch (error) {

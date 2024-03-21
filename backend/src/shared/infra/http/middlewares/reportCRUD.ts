@@ -371,10 +371,8 @@ XXXXXXXXXXXXXXXXXXX
             console.log(error);
         }
 
-        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-        console.log(reportList);
-        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 
+        reportList.sort((a, b) => b.presenceNumber - a.presenceNumber);
         return res.status(200).json({
             success: true,
             message: 'Busca do relatório concluído com sucesso',
