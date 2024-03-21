@@ -43,19 +43,19 @@ export function useColumns({
       headerName: 'Porcentagem',
       field: 'percentNumber',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-      params?.value ? `${params?.value}%` : '--',
+      Number(params?.value) <= 100 ? `${params?.value}%` : '--',
+    },
+    {
+      headerName: 'Ofertas',
+      field: 'offer',
+      valueFormatter: (params: CellFunctionParams<Report>) =>
+        params?.value ? `${params?.value},00` : '--',
     },
     {
       headerName: 'Dízimos',
       field: 'tithing',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         params?.value ? `${params?.value},00` : '--',
-    },
-    {
-      headerName: 'Ofertas',
-      field: 'offer',
-      valueFormatter: (params: CellFunctionParams<Report>) =>
-      params?.value ? `${params?.value},00` : '--',
     },
     {
       headerName: '',

@@ -160,21 +160,14 @@ export function Reports() {
       {/*JSON.stringify(reports[0].subject[0].students)*/}
       {/*reports['total'].offer*/}
       @@@@@@@@ <br />
-      Oferta total: {valueTotal?.totalTithing || 0}
+      Oferta total: {valueTotal?.totalOffer || 0}
       <br />
-      Dízimo total: {valueTotal?.totalOffer || 0}
+      Dízimo total: {valueTotal?.totalTithing || 0}
       <br />@@@@@@@@
 
       <br />
-      CASO NÃO TENHA OFERTADO NADA NO DIA, NÃO RETORNA.. ENTÃO PUXA TODOS OS DADOS. TEM QUE INFORMAR QUE OS DADOS SÃO DESDO INÍCIO OU FAZER UM JOIN DE OFFER E PRESENCE
       <br />
-      <br />
-      (Fazer com que mostre a porcentagem apenas se for o início e o fim sendo a mesma data, então pesquisa as presenças atuais em uma função "count" e coloca o json APENAS SE FOR OS DOIS NA MESMA DATA)
-      <br />
-      (deve poder saber quem teve mais presenças e porcentagem)
-      <br />
-      <br />
-      criar um botão para ir ver o relatório individual onde mostra quem deu mais dizimos, presenças, etc.
+      criar um botão para ir ver o relatório individual da turma, onde irá mostrar quem deu mais dizimos, presenças etc.
 
       <div className={style.viewDesktop}>
         <TableComponent
