@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 import { getClassOfferList } from './classOfferCRUD';
-import { getAllPresenceList, getPresenceList, countPresence, countPercent } from './presenceCRUD';
+import { getAllPresenceList, deleteOldPresences, countPresence, countPercent } from './presenceCRUD';
 // Middleware para enviar dados para o mongo
 
 
@@ -198,61 +198,6 @@ export async function getReportByDateOrTeacherId(
                 const itemId = item.subject[0]._id.toString();
                 if (!mergedMap[itemId]) {
                     mergedMap[itemId] = item;
-                    /*
-XXXXXXXXXXXXXXXXXXX
-{
-_id: new ObjectId("65f89e9590938bf69525f9a5"),
-subjectName: 'Jovens',
-nameStudent: 'Alaís',
-presence: true,
-teacher: [
-{
-  _id: new ObjectId("65f897825e9502ca266ef572"),
-  code: '1',
-  name: 'André',
-  email: 'andre@gmail.com',
-  password: '$2b$10$6FJfg7K9n9WQVE1wbtMMnO0SB5gyiZKHBAN6Aiupq/dAF8RnqIu0C',
-  occupation: 'teacher',
-  avatar: null,
-  avatarURL: null,
-  teacher: null,
-  warningsAmount: 0,
-  createdAt: 2024-03-18T19:35:30.608Z,
-  __v: 0
-}
-],
-student: [
-{
-  _id: new ObjectId("65f898955e9502ca266ef5f0"),
-  code: '6',
-  name: 'Alaís',
-  email: 'alais@gmail.com',
-  password: '$2b$10$eHiPBVuZqaCzYsTCETdKDeAXXx7I84VrDp.pEhDkbfGp2szw4HD8i',
-  occupation: 'student',
-  avatar: null,
-  avatarURL: null,
-  teacher: new ObjectId("65f897825e9502ca266ef572"),
-  warningsAmount: 0,
-  createdAt: 2024-03-18T19:40:05.414Z,
-  __v: 0
-}
-],
-subject: [
-{
-  _id: new ObjectId("65f897aa5e9502ca266ef584"),
-  code: '1',
-  name: 'Jovens',
-  students: [Array],
-  teacher: new ObjectId("65f897825e9502ca266ef572"),
-  createdAt: 2024-03-18T19:36:10.542Z,
-  __v: 0
-}
-],
-createdAt: 2024-03-18T20:05:41.069Z,
-__v: 0
-}
-XXXXXXXXXXXXXXXXXXX
-                    */
 
                 } else {
                     // Mesclar os objetos se o _id já existir
@@ -264,36 +209,6 @@ XXXXXXXXXXXXXXXXXXX
                 if (typeof mergedMap[itemId].offer !== 'number')
                     mergedMap[itemId].offer = 0;
             });
-
-            /*
-XXXXXXXXXXXXXXXXXXX
-{
-  '65f897aa5e9502ca266ef584': {
-    _id: new ObjectId("65f997d34993aad137817894"),
-    subjectName: 'Jovens',
-    nameStudent: 'Cleverton',
-    presence: true,
-    teacher: [ [Object] ],
-    student: [ [Object] ],
-    subject: [ [Object] ],
-    createdAt: 2024-03-19T13:49:07.895Z,
-    __v: 0
-  },
-  '65f897b25e9502ca266ef58b': {
-    _id: new ObjectId("65faf21740a4f414784ea97a"),
-    subjectName: 'Senhores',
-    nameStudent: 'Francisco',
-    presence: true,
-    teacher: [ [Object] ],
-    student: [ [Object] ],
-    subject: [ [Object] ],
-    createdAt: 2024-03-20T14:26:31.543Z,
-    __v: 0
-  }
-}
-XXXXXXXXXXXXXXXXXXX
-            */
-
 
             // Adicionar elementos de classOfferList ao objeto mergedMap
             classOfferList.forEach(item => {
@@ -329,8 +244,8 @@ XXXXXXXXXXXXXXXXXXX
         }
 
         // === Object.keys(mergedMap)
-
         const numberOfPresence = await countPresence(reportList);
+        //const numberOfPresence = await deleteOldPresences(reportList);
         // Chamada da função para mesclar os arrays
         const mergedArray = mergeArrays(reportList, classOfferList, numberOfPresence);
 
@@ -373,9 +288,7 @@ XXXXXXXXXXXXXXXXXXX
 
 
         reportList = await countPercent(reportList);
-        console.log('XXXXXXXXXXXXXXXXXXXXX');
-        console.log(reportList);
-        console.log('XXXXXXXXXXXXXXXXXXXXX');
+
         reportList.sort((a, b) => b.presenceNumber - a.presenceNumber);
         return res.status(200).json({
             success: true,

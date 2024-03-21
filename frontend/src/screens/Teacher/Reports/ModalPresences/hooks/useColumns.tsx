@@ -24,7 +24,7 @@ export function useColumns({ handleEditPresences }: Props) {
       headerName: 'Presença',
       field: 'presence',
       valueFormatter: (params: CellFunctionParams<Presence>) =>
-        params?.data?.presence ? 'Presente' : 'Ausente',
+        params?.data?.presence ? 'Presente' : 'Falta',
     },
     {
       headerName: 'Qtd.',

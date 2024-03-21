@@ -140,6 +140,7 @@ export async function getPresenceList(
         // Executa a função reportList assíncrona para obter a lista de ofertas
         let reportList = await getAllPresenceList(req, res, next);
 
+        ////AAAAAAAAAAAAAAA
         reportList = [
             ...reportList,
         ];
@@ -196,6 +197,7 @@ export async function getPresenceList(
              console.log(error);
          }
  */
+         reportList.sort((a, b) => b.presenceCount - a.presenceCount);
 
         return res.status(200).json({
             success: true,
@@ -224,92 +226,98 @@ export async function getAllPresenceList(
 
     const subjectId = req.params?.subjectId || null;
 
-    if (subjectId) {
-        return await PresenceModel.aggregate([
-            {
-                $match: {
-                    createdAt: {
-                        $gte: startDate, // Data maior ou igual a startDate
-                        $lte: endDate    // Data menor ou igual a endDate
-                    },
-                    subject: new mongoose.Types.ObjectId(subjectId)// Filtrar por subjectId
-                }
-            },
-            {
-                $lookup: {
-                    from: 'subjects', // Nome da coleção a ser populada
-                    localField: 'subject',
-                    foreignField: '_id',
-                    as: 'subject'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users', // Nome da coleção a ser populada
-                    localField: 'teacher',
-                    foreignField: '_id',
-                    as: 'teacher'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users', // Nome da coleção a ser populada
-                    localField: 'student',
-                    foreignField: '_id',
-                    as: 'student'
-                }
-            },
-            // Outros $lookup para outras chaves estrangeiras, se necessário
-        ]).exec();
-    } else {
-        return await PresenceModel.aggregate([
-            {
-                $match: {
-                    createdAt: {
-                        $gte: startDate, // Data maior ou igual a startDate
-                        $lte: endDate    // Data menor ou igual a endDate
-                    },
-                    //@@@@@@@@@subject: subjectId // Filtrar por subjectId
-                }
-            },
-            {
-                $lookup: {
-                    from: 'subjects', // Nome da coleção a ser populada
-                    localField: 'subject',
-                    foreignField: '_id',
-                    as: 'subject'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users', // Nome da coleção a ser populada
-                    localField: 'teacher',
-                    foreignField: '_id',
-                    as: 'teacher'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users', // Nome da coleção a ser populada
-                    localField: 'student',
-                    foreignField: '_id',
-                    as: 'student'
-                }
-            },
-            // Outros $lookup para outras chaves estrangeiras, se necessário
-        ]).exec();
+    const getPresenceList = async () => {
+        if (subjectId) {
+            return await PresenceModel.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: startDate, // Data maior ou igual a startDate
+                            $lte: endDate    // Data menor ou igual a endDate
+                        },
+                        subject: new mongoose.Types.ObjectId(subjectId)// Filtrar por subjectId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'subjects', // Nome da coleção a ser populada
+                        localField: 'subject',
+                        foreignField: '_id',
+                        as: 'subject'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users', // Nome da coleção a ser populada
+                        localField: 'teacher',
+                        foreignField: '_id',
+                        as: 'teacher'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users', // Nome da coleção a ser populada
+                        localField: 'student',
+                        foreignField: '_id',
+                        as: 'student'
+                    }
+                },
+                // Outros $lookup para outras chaves estrangeiras, se necessário
+            ]).exec();
+        } else {
+            return await PresenceModel.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: startDate, // Data maior ou igual a startDate
+                            $lte: endDate    // Data menor ou igual a endDate
+                        },
+                        //@@@@@@@@@subject: new mongoose.Types.ObjectId(subjectId)// Filtrar por subjectId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'subjects', // Nome da coleção a ser populada
+                        localField: 'subject',
+                        foreignField: '_id',
+                        as: 'subject'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users', // Nome da coleção a ser populada
+                        localField: 'teacher',
+                        foreignField: '_id',
+                        as: 'teacher'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users', // Nome da coleção a ser populada
+                        localField: 'student',
+                        foreignField: '_id',
+                        as: 'student'
+                    }
+                },
+                // Outros $lookup para outras chaves estrangeiras, se necessário
+            ]).exec();
+        }
+
     }
+    const presenceList = await getPresenceList();
+    return await deleteTheOldestFromTheSameDay(presenceList);
 }
 
 
 export async function countPresence(presentList) {
+    presentList = await deleteTheOldestFromTheSameDay(presentList);
+
     const countPresence = {};
     presentList.forEach(item => {
         const subjectName = item.subject[0].name;
         if (item?.presence === true)
             countPresence[subjectName] = (countPresence[subjectName] || 0) + 1
         // ????            countPresence[item._id].presenceNumber = (countPresence[item._id].presenceNumber || 0) + 1
-
     });
     return countPresence;
 }
@@ -325,6 +333,7 @@ export async function countPercent(presentList) {
 // Função para eliminar presenças duplicadas, mantendo apenas a mais recente
 async function deleteDuplicatePresencesAndGetUnique(presentList) {
     try {
+        presentList = countPercent(presentList);
         // Mapear presenças únicas por pessoa e dia
         const uniquePresencesMap = new Map();
 
@@ -377,6 +386,67 @@ async function deleteDuplicatePresencesAndGetUnique(presentList) {
         return uniquePresences;
     } catch (error) {
         console.error('Erro ao excluir presenças duplicadas:', error);
+        throw error;
+    }
+}
+
+
+
+export async function deleteTheOldestFromTheSameDay(presentList) {
+    try {
+        // Mapear presenças únicas por pessoa e dia
+        const uniquePresencesMap = new Map();
+
+        for (const presence of presentList) {
+            const key = `${presence.nameStudent}_${presence.createdAt.toDateString()}`;
+
+            // Se já existir uma presença para esta pessoa neste dia
+            if (uniquePresencesMap.has(key)) {
+                const existingPresence = uniquePresencesMap.get(key);
+
+                // Verificar se a presença atual é mais recente
+                if (presence.createdAt > existingPresence.createdAt) {
+                    // Atualizar a presença mais antiga com a atual
+                    uniquePresencesMap.set(key, presence);
+                }
+            } else {
+                // Se não existir uma presença para esta pessoa neste dia, adicionar à lista
+                uniquePresencesMap.set(key, presence);
+            }
+        }
+
+        // IDs das presenças mais antigas a serem excluídas
+        const presenceIdsToDelete = [];
+
+        // Identificar as presenças mais antigas a serem excluídas
+        for (const [, presence] of uniquePresencesMap) {
+            const { _id, nameStudent, createdAt } = presence;
+            const similarPresences = presentList.filter(p => p.nameStudent === nameStudent && p.createdAt.toDateString() === createdAt.toDateString());
+
+            // Se houver mais de uma presença (ou falta) para esta pessoa neste dia
+            if (similarPresences.length > 1) {
+                // Encontrar a presença mais antiga
+                const oldestPresence = similarPresences.reduce((oldest, current) => current.createdAt < oldest.createdAt ? current : oldest);
+
+                // Adicionar o ID da presença mais antiga à lista de IDs a serem excluídos
+                presenceIdsToDelete.push(oldestPresence._id);
+            }
+        }
+
+        // Excluir todas as presenças mais antigas de uma vez
+        if (presenceIdsToDelete.length > 0) {
+            await PresenceModel.deleteMany({
+                _id: { $in: presenceIdsToDelete }
+            });
+        }
+
+        // Obter presenças únicas a partir do mapa
+        const uniquePresences = Array.from(uniquePresencesMap.values());
+
+        // Retornar as presenças únicas
+        return uniquePresences;
+    } catch (error) {
+        console.error('Erro ao excluir a presença mais antiga:', error);
         throw error;
     }
 }
