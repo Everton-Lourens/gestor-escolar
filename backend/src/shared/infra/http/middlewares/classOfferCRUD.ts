@@ -267,6 +267,7 @@ export async function getClassOfferList(
             // Outros $lookup para outras chaves estrangeiras, se necessário
         ]).exec();
 
+        /*
         if (offerList.length === 0) {
             offerList = await OfferModel.aggregate([
                 {
@@ -296,6 +297,7 @@ export async function getClassOfferList(
                 // Outros $lookup para outras chaves estrangeiras, se necessário
             ]).exec();
         }
+        */
 
         return offerList;
 

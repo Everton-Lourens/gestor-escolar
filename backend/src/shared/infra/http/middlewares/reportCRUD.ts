@@ -3,8 +3,9 @@ import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 import { getClassOfferList } from './classOfferCRUD';
-import { getAllPresenceList, getPresenceList } from './presenceCRUD';
+import { getAllPresenceList, getPresenceList, countPresence } from './presenceCRUD';
 // Middleware para enviar dados para o mongo
+
 
 export async function sendClassOffer(
     req: Request,
@@ -185,28 +186,161 @@ export async function getReportByDateOrTeacherId(
 ) {
     try {
 
-        const getReportList = async () => {
-            try {
-                return await getAllPresenceList(req, res, next);
-                return await getClassOfferList(req, res, next);
-                return {
-                    classOffer: await getClassOfferList(req, res, next),
-                    presence: await getClassOfferList(req, res, next),
-                };
-            } catch (e) {
-                console.error(e);
-                return null;
-            }
+        let reportList = await getAllPresenceList(req, res, next);
+        let classOfferList = await getClassOfferList(req, res, next);
+
+        // Função para mesclar os arrays
+        function mergeArrays(reportList, classOfferList, numberOfPresence) {
+            // Criar um objeto para armazenar os elementos com _id como chave
+            const mergedMap = {};
+            // Adicionar elementos de reportList ao objeto mergedMap
+            reportList.forEach(item => {
+                const itemId = item.subject[0]._id.toString();
+                if (!mergedMap[itemId]) {
+                    mergedMap[itemId] = item;
+                    /*
+XXXXXXXXXXXXXXXXXXX
+{
+_id: new ObjectId("65f89e9590938bf69525f9a5"),
+subjectName: 'Jovens',
+nameStudent: 'Alaís',
+presence: true,
+teacher: [
+{
+  _id: new ObjectId("65f897825e9502ca266ef572"),
+  code: '1',
+  name: 'André',
+  email: 'andre@gmail.com',
+  password: '$2b$10$6FJfg7K9n9WQVE1wbtMMnO0SB5gyiZKHBAN6Aiupq/dAF8RnqIu0C',
+  occupation: 'teacher',
+  avatar: null,
+  avatarURL: null,
+  teacher: null,
+  warningsAmount: 0,
+  createdAt: 2024-03-18T19:35:30.608Z,
+  __v: 0
+}
+],
+student: [
+{
+  _id: new ObjectId("65f898955e9502ca266ef5f0"),
+  code: '6',
+  name: 'Alaís',
+  email: 'alais@gmail.com',
+  password: '$2b$10$eHiPBVuZqaCzYsTCETdKDeAXXx7I84VrDp.pEhDkbfGp2szw4HD8i',
+  occupation: 'student',
+  avatar: null,
+  avatarURL: null,
+  teacher: new ObjectId("65f897825e9502ca266ef572"),
+  warningsAmount: 0,
+  createdAt: 2024-03-18T19:40:05.414Z,
+  __v: 0
+}
+],
+subject: [
+{
+  _id: new ObjectId("65f897aa5e9502ca266ef584"),
+  code: '1',
+  name: 'Jovens',
+  students: [Array],
+  teacher: new ObjectId("65f897825e9502ca266ef572"),
+  createdAt: 2024-03-18T19:36:10.542Z,
+  __v: 0
+}
+],
+createdAt: 2024-03-18T20:05:41.069Z,
+__v: 0
+}
+XXXXXXXXXXXXXXXXXXX
+                    */
+
+                } else {
+                    // Mesclar os objetos se o _id já existir
+                    mergedMap[itemId] = { ...mergedMap[itemId], ...item };
+                }
+                if (typeof mergedMap[itemId].tithing !== 'number')
+                    mergedMap[itemId].tithing = 0;
+
+                if (typeof mergedMap[itemId].offer !== 'number')
+                    mergedMap[itemId].offer = 0;
+            });
+
+            /*
+XXXXXXXXXXXXXXXXXXX
+{
+  '65f897aa5e9502ca266ef584': {
+    _id: new ObjectId("65f997d34993aad137817894"),
+    subjectName: 'Jovens',
+    nameStudent: 'Cleverton',
+    presence: true,
+    teacher: [ [Object] ],
+    student: [ [Object] ],
+    subject: [ [Object] ],
+    createdAt: 2024-03-19T13:49:07.895Z,
+    __v: 0
+  },
+  '65f897b25e9502ca266ef58b': {
+    _id: new ObjectId("65faf21740a4f414784ea97a"),
+    subjectName: 'Senhores',
+    nameStudent: 'Francisco',
+    presence: true,
+    teacher: [ [Object] ],
+    student: [ [Object] ],
+    subject: [ [Object] ],
+    createdAt: 2024-03-20T14:26:31.543Z,
+    __v: 0
+  }
+}
+XXXXXXXXXXXXXXXXXXX
+            */
+
+
+            // Adicionar elementos de classOfferList ao objeto mergedMap
+            classOfferList.forEach(item => {
+                const itemId = item.subject[0]._id.toString();
+
+                if (!mergedMap[itemId]) {
+                    mergedMap[itemId] = item;
+                } else {
+                    if (typeof mergedMap[itemId].tithing === 'number') mergedMap[itemId].tithing += item?.tithing || 0;
+                    else mergedMap[itemId].tithing = item?.tithing || 0;
+
+                    if (typeof mergedMap[itemId].offer === 'number') mergedMap[itemId].offer += item?.offer || 0;
+                    else mergedMap[itemId].offer = item?.offer || 0;
+                }
+            });
+
+            // Retornar os valores do objeto mesclado como um array
+            return Object.values(mergedMap).map((item: any) => {
+                if (numberOfPresence[item.subjectName]) {
+                    item.presenceNumber = numberOfPresence[item.subjectName];
+                } else {
+                    item.presenceNumber = 0;
+                }
+                if (typeof item?.nameStudent === 'string')
+                    delete item.nameStudent;
+
+                if (item?.presence === true)
+                    delete item.presence;
+
+                return item; // Retornar o item modificado
+            });
+
         }
 
+        // === Object.keys(mergedMap)
 
-        let reportList = await getReportList();
-
-        let tithing: number = 0;
-        let offer: number = 0;
-        let subject: { [key: string]: any } = {};
+        const numberOfPresence = await countPresence(reportList);
+        // Chamada da função para mesclar os arrays
+        const mergedArray = mergeArrays(reportList, classOfferList, numberOfPresence);
 
         try {
+            let tithing: number = 0;
+            let offer: number = 0;
+            //let subject: { [key: string]: any } = {};
+
+            reportList = mergedArray;
+
             if (Array.isArray(reportList)) {
 
                 reportList.forEach((element, index) => {
@@ -217,7 +351,7 @@ export async function getReportByDateOrTeacherId(
                 reportList.forEach((element, index) => {
                     //console.log(element);
                     reportList[index].teacherName = element?.teacher[0]?.name || '';
-                    reportList[index].studentName = element?.student[0]?.name || '';
+                    //reportList[index].studentName = element?.student[0]?.name || '';
                     reportList[index].subjectName = element?.subject[0]?.name || '';
                     reportList[index].countStudents = element?.subject[0]?.students.length;
                 });
@@ -237,10 +371,9 @@ export async function getReportByDateOrTeacherId(
             console.log(error);
         }
 
-  
-        console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-        console.log(reportList)
-         console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+        console.log(reportList);
+        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 
         return res.status(200).json({
             success: true,

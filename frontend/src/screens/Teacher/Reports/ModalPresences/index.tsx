@@ -192,13 +192,13 @@ export function ModalPresences({ open, handleClose, reportData, dateFilter }: Pr
               rows={presences}
               loading={loadingGetPresences}
               columns={columns}
-              emptyText="Nenhum aluno cadastrado na turma"
+              emptyText="Nenhuma presença registrada"
             />
           </div>
 
           <div className={style.viewMobile}>
             <ListMobile
-              emptyText="Nenhum aluno cadastrado na turma"
+              emptyText="Nenhuma presença registrada"
               itemFields={fieldsMobile}
               collapseItems={columns}
               items={presences}

@@ -139,9 +139,6 @@ export async function getPresenceList(
 
         // Executa a função reportList assíncrona para obter a lista de ofertas
         let reportList = await getAllPresenceList(req, res, next);
-        console.log('2122222222');
-        console.log(reportList);
-        console.log('2122222222');
 
         reportList = [
             ...reportList,
@@ -304,6 +301,18 @@ export async function getAllPresenceList(
     }
 }
 
+
+export async function countPresence(presentList) {
+    const countPresence = {};
+    presentList.forEach(item => {
+        const subjectName = item.subject[0].name;
+        if (item?.presence === true)
+            countPresence[subjectName] = (countPresence[subjectName] || 0) + 1
+        // ????            countPresence[item._id].presenceNumber = (countPresence[item._id].presenceNumber || 0) + 1
+
+    });
+    return countPresence;
+}
 
 // Função para eliminar presenças duplicadas, mantendo apenas a mais recente
 async function deleteDuplicatePresencesAndGetUnique(presentList) {

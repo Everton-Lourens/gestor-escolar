@@ -31,11 +31,11 @@ export function useColumns({
       headerName: 'Alunos',
       field: 'countStudents',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-        `${params?.value || 0}`,
+        params?.value || '--',
     },
     {
       headerName: 'Presenças',
-      field: 'presence',
+      field: 'presenceNumber',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         params.value || '--',
     },
@@ -43,13 +43,13 @@ export function useColumns({
       headerName: 'Dízimos',
       field: 'tithing',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-        `${params?.value || 0},00`,
+        params?.value ? `${params?.value},00` : '--',
     },
     {
       headerName: 'Ofertas',
       field: 'offer',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-        `${params?.value || 0},00`,
+      params?.value ? `${params?.value},00` : '--',
     },
     {
       headerName: '',
@@ -73,7 +73,7 @@ DAQUI VEM O ID DA TURMA
             </button>
 
             <button
-            disabled={true}
+              disabled={true}
               onClick={() => {
                 window.location.href = `/teacher/reports/${params.data._id}`
                 return;
