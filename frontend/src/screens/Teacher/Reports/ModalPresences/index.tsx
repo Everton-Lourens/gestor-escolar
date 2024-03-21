@@ -169,7 +169,7 @@ export function ModalPresences({ open, handleClose, reportData, dateFilter }: Pr
     <ModalLayout
       open={open}
       handleClose={handleClose}
-      title={`Presenças (${reportData.subjectName}) — ${new Date(showDateFilter?.startDate).toLocaleDateString('pt-BR')} ATÉ ${new Date(showDateFilter?.endDate).toLocaleDateString('pt-BR')}`}
+      title={`Presenças (${reportData.subjectName.toUpperCase()}) — ${new Date(showDateFilter?.startDate).toLocaleDateString('pt-BR')} ATÉ ${new Date(showDateFilter?.endDate).toLocaleDateString('pt-BR')}`}
       submitButtonText={editPresenceMode ? 'Confirmar' : ''}
       onSubmit={editPresenceMode ? onUpdatePresences : undefined}
       loading={loadingUpdatePresences}

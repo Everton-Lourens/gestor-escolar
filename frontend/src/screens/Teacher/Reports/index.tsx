@@ -167,7 +167,7 @@ export function Reports() {
 
       <br />
       <br />
-      criar um botão para ir ver o relatório individual da turma, onde irá mostrar quem deu mais dizimos, presenças etc.
+      criar um botão para ir ver o relatório individual de cada turma, onde irá mostrar quem deu mais dizimos, presenças etc.
 
       <div className={style.viewDesktop}>
         <TableComponent
