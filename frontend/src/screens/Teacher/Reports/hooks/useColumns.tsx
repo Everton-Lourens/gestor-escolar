@@ -29,7 +29,7 @@ export function useColumns({
     },
     {
       headerName: 'Alunos',
-      field: 'countStudents',
+      field: 'studentsNumber',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         params?.value || '--',
     },
@@ -38,6 +38,12 @@ export function useColumns({
       field: 'presenceNumber',
       valueFormatter: (params: CellFunctionParams<Report>) =>
         params.value || '--',
+    },
+    {
+      headerName: 'Porcentagem',
+      field: 'percentNumber',
+      valueFormatter: (params: CellFunctionParams<Report>) =>
+      params?.value ? `${params?.value}%` : '--',
     },
     {
       headerName: 'Dízimos',

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { OfferModel } from '../../../../entities/offer'
 import mongoose, { Types } from 'mongoose'
 import { getClassOfferList } from './classOfferCRUD';
-import { getAllPresenceList, getPresenceList, countPresence } from './presenceCRUD';
+import { getAllPresenceList, getPresenceList, countPresence, countPercent } from './presenceCRUD';
 // Middleware para enviar dados para o mongo
 
 
@@ -186,7 +186,7 @@ export async function getReportByDateOrTeacherId(
 ) {
     try {
 
-        let reportList = await getAllPresenceList(req, res, next);
+        let reportList: any[] = await getAllPresenceList(req, res, next);
         let classOfferList = await getClassOfferList(req, res, next);
 
         // Função para mesclar os arrays
@@ -353,7 +353,7 @@ XXXXXXXXXXXXXXXXXXX
                     reportList[index].teacherName = element?.teacher[0]?.name || '';
                     //reportList[index].studentName = element?.student[0]?.name || '';
                     reportList[index].subjectName = element?.subject[0]?.name || '';
-                    reportList[index].countStudents = element?.subject[0]?.students.length;
+                    reportList[index].studentsNumber = element?.subject[0]?.students.length;
                 });
 
                 reportList = Object.values(reportList.reduce((acc, cur) => {
@@ -372,6 +372,10 @@ XXXXXXXXXXXXXXXXXXX
         }
 
 
+        reportList = await countPercent(reportList);
+        console.log('XXXXXXXXXXXXXXXXXXXXX');
+        console.log(reportList);
+        console.log('XXXXXXXXXXXXXXXXXXXXX');
         reportList.sort((a, b) => b.presenceNumber - a.presenceNumber);
         return res.status(200).json({
             success: true,
@@ -504,7 +508,7 @@ export async function getReportBySubjectId(
                     reportList[index].teacherName = element?.teacher[0]?.name;
                     reportList[index].studentName = element?.student[0]?.name;
                     reportList[index].subjectName = element?.subject[0]?.name;
-                    reportList[index].countStudents = element?.subject[0]?.students.length;
+                    reportList[index].studentsNumber = element?.subject[0]?.students.length;
 
                     if (!!subject[element?.subject[0]?.subjectName]) {
                         reportList[subject[element?.subject[0]?.subjectName].currentIndex].countTithing += element?.tithing || 0;

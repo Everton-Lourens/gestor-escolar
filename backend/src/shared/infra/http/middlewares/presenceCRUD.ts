@@ -314,6 +314,14 @@ export async function countPresence(presentList) {
     return countPresence;
 }
 
+export async function countPercent(presentList) {
+    return presentList.map((item: any) => {
+        const percent = (Number(item?.presenceNumber) || 0) / (Number(item?.studentsNumber)) * 100;
+        item.percentNumber = parseFloat(percent.toFixed(1)) || 0.00;
+        return item; // Retornar o item modificado
+    });
+}
+
 // Função para eliminar presenças duplicadas, mantendo apenas a mais recente
 async function deleteDuplicatePresencesAndGetUnique(presentList) {
     try {

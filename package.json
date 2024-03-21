@@ -6,6 +6,8 @@
   "scripts": {
     "start-back": "cd backend && npm start",
     "start-front": "cd frontend && npm start",
+    "back": "cd backend && npm start",
+    "front": "cd frontend && npm start",
     "start": "npm run start-back && npm run start-front"
   },
   "author": "",
