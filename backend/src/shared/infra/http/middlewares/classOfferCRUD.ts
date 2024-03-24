@@ -220,8 +220,13 @@ export async function getClassOfferList(
     res: Response,
     next: NextFunction,
 ) {
+
+    if (!req?.query['teacherId'])
+        return res.status(400).send(`<h1>Querystring ausente ou inválida</h1> <p>- teacherId: ${!!req.query['teacherId']}</p>`);
+
     // Verifica se a data é válida
     const { startDate, endDate } = await checkDateQuery(req, res, next);
+    const teacherId = req.query?.teacherId || null;
 
     if (!startDate || !endDate) {
         return res.status(400).json({
@@ -237,7 +242,8 @@ export async function getClassOfferList(
                     createdAt: {
                         $gte: new Date(startDate), // Data maior ou igual a startDate
                         $lte: new Date(endDate)    // Data menor ou igual a endDate
-                    }
+                    },
+                    teacher: new mongoose.Types.ObjectId(teacherId as string)// Filtrar por teacherId
                 }
             },
             {

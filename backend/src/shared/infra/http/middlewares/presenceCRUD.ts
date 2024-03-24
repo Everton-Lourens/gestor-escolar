@@ -136,6 +136,8 @@ export async function getPresenceList(
     next: NextFunction,
 ) {
     try {
+        if (req?.query['teacherId'] && false)
+            return res.status(400).send(`<h1>Querystring ausente ou inválida</h1> <p>- teacherId: ${!!req.query['teacherId']}</p>`);
 
         // Executa a função reportList assíncrona para obter a lista de ofertas
         let reportList = await getAllPresenceList(req, res, next);
@@ -197,7 +199,7 @@ export async function getPresenceList(
              console.log(error);
          }
  */
-         reportList.sort((a, b) => b.presenceCount - a.presenceCount);
+        reportList.sort((a, b) => b.presenceCount - a.presenceCount);
 
         return res.status(200).json({
             success: true,
@@ -221,10 +223,14 @@ export async function getAllPresenceList(
     res: Response,
     next: NextFunction
 ) {
+    if (!req?.query['teacherId'])
+        return res.status(400).send(`<h1>Querystring ausente ou inválida</h1> <p>- teacherId: ${!!req.query['teacherId']}</p>`);
+
     // Verifica se a data é válida
     const { startDate, endDate } = await checkDateQuery(req, res, next);
 
     const subjectId = req.params?.subjectId || null;
+    const teacherId = req.query?.teacherId || null;
 
     const getPresenceList = async () => {
         if (subjectId) {
@@ -235,7 +241,8 @@ export async function getAllPresenceList(
                             $gte: startDate, // Data maior ou igual a startDate
                             $lte: endDate    // Data menor ou igual a endDate
                         },
-                        subject: new mongoose.Types.ObjectId(subjectId)// Filtrar por subjectId
+                        subject: new mongoose.Types.ObjectId(subjectId), // Filtrar por subjectId
+                        teacher: new mongoose.Types.ObjectId(teacherId as string)// Filtrar por teacherId
                     }
                 },
                 {
@@ -272,6 +279,7 @@ export async function getAllPresenceList(
                             $gte: startDate, // Data maior ou igual a startDate
                             $lte: endDate    // Data menor ou igual a endDate
                         },
+                        teacher: new mongoose.Types.ObjectId(teacherId as string)// Filtrar por teacherId
                         //@@@@@@@@@subject: new mongoose.Types.ObjectId(subjectId)// Filtrar por subjectId
                     }
                 },

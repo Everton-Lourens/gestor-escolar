@@ -46,11 +46,13 @@ export function ModalPresences({ open, handleClose, reportData, dateFilter }: Pr
 
   function getPresences() {
     const subjectId: string = reportData?.subject[0]?._id;
-    if (!subjectId) return;
+    const teacherId: string = reportData?.teacher[0]?._id;
+
+    if (!subjectId || !teacherId) return;
     // BUSCAR VALORES ANTIGOS
     setLoadingGetPresences(true)
     presencesService
-      .getAll(subjectId, dateFilter?.dateQuery)
+      .getAll(subjectId, dateFilter?.dateQuery, teacherId)
       .then((res) => {
         setPresences(res.data.items);
         setShowDateFilter(dateFilter);

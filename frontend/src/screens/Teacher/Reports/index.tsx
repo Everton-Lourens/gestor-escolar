@@ -11,13 +11,31 @@ import { ListMobile } from '../../../components/ListMobile'
 import { useFieldsMobile } from './hooks/useFieldsMobile'
 import { ModalPresences } from './ModalPresences'
 import { FilterDate } from '../../../components/FilterDate'
+import { usersService } from '../../../../src/services/usersService'
 import dayjs from 'dayjs'
 
 export interface Report {
   subject: any
   _id: string
+  students: string
   name: string
   reports: string[]
+  subjectName: string;
+  teacher: any
+}
+
+interface ValueTotal {
+  totalOffer?: number;
+  totalTithing?: number;
+  totalStudents?: number;
+  totalPercent?: number;
+  totalPresence?: number;
+}
+
+interface dateFilter {
+  dateQuery?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export function Reports() {
@@ -56,26 +74,41 @@ export function Reports() {
   const endOfToday = dayjs(new Date()).endOf('day').toISOString();
   const [startDate, setStartDate] = useState<string>(startOfToday);
   const [endDate, setEndDate] = useState<string>(endOfToday);
-  const [dateFilter, setDateFilter] = useState<object>({});
-
-  const [valueTotal, setValueTotal] = useState<number>(0);
+  const [dateFilter, setDateFilter] = useState<dateFilter>({ dateQuery: '', startDate: '', endDate: '' });
+  const [valueTotal, setValueTotal] = useState<ValueTotal>({ totalOffer: 0, totalTithing: 0, totalStudents: 0, totalPercent: 0, totalPresence: 0 });
 
   function getReports(startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
     setLoadingReports(true);
+    const userInfo = usersService.getUserInfoByCookie()
+    const teacherId = userInfo?.occupation === 'teacher' ? userInfo._id : '';
+    const dateFormatted = getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter);
 
     reportsService
-      .getAll(getDateQuery(startDateResponseFromFilter, endDateResponseFromFilter))
+      .getAll(dateFormatted, teacherId)
       .then((res) => {
         setReports(res.data.items)
         const total = {
           totalTithing: 0,
-          totalOffer: 0
+          totalOffer: 0,
+          totalStudents: 0,
+          totalPercent: 0,
+          totalPresence: 0,
         };
 
-        res.data.items.forEach((element: { tithing: number; offer: number }) => {
+        res.data.items.forEach((element: {
+          tithing: number;
+          offer: number,
+          studentsNumber: number,
+          presenceNumber: number,
+        }) => {
           total.totalTithing += element.tithing;
           total.totalOffer += element.offer;
+          total.totalStudents += element.studentsNumber;
+          total.totalPresence += element.presenceNumber;
         });
+        const percent = (Number(total.totalPresence) || 0) / (Number(total.totalStudents)) * 100;
+        total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
+
         setValueTotal(total);
       })
       .catch((err) => {
@@ -159,15 +192,14 @@ export function Reports() {
       {/*JSON.stringify(reports[3].subject[0].students.length)*/}
       {/*JSON.stringify(reports[0].subject[0].students)*/}
       {/*reports['total'].offer*/}
-      @@@@@@@@ <br />
-      Oferta total: {valueTotal?.totalOffer || 0}
+      =================
       <br />
-      Dízimo total: {valueTotal?.totalTithing || 0}
-      <br />@@@@@@@@
-
-      <br />
-      <br />
-      criar um botão para ir ver o relatório individual de cada turma, onde irá mostrar quem deu mais dizimos, presenças etc.
+      <i>Oferta total: {valueTotal?.totalOffer || 0},00</i>
+      <i>Dízimo total: {valueTotal?.totalTithing || 0},00</i>
+      <i>Total de estudantes: {valueTotal?.totalStudents || 0}</i>
+      <i>Presença total: {valueTotal?.totalPresence || 0}</i>
+      <i>Porcentagem total: {valueTotal?.totalPercent || 0.00}%</i>
+      =================
 
       <div className={style.viewDesktop}>
         <TableComponent
@@ -214,7 +246,11 @@ export function Reports() {
         <ModalPresences
           reportData={selectedReport}
           open={modalPresencesOpened}
-          dateFilter={dateFilter}
+          dateFilter={{
+            dateQuery: dateFilter?.dateQuery as string,
+            startDate: dateFilter.startDate as string,
+            endDate: dateFilter.endDate as string,
+          }}
           handleClose={() => {
             setModalPresencesOpened(false)
             setSelectedReport(undefined)

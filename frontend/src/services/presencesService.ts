@@ -8,8 +8,8 @@ interface UpdateParams {
 }
 
 export const presencesService = {
-  getAll(idSubject: string, date: string) {
-    return http.get(`/report/presence/subject/${idSubject}?${date}`)
+  getAll(idSubject: string, date: string, teacherId?: string) {
+    return http.get(`/report/presence/subject/${idSubject}?${date}&teacherId=${teacherId}`)
   },
 
   update({ _id: idPresence, firstPresence, secondPresence }: UpdateParams) {

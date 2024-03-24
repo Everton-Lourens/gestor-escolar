@@ -185,8 +185,10 @@ export async function getReportByDateOrTeacherId(
     next: NextFunction
 ) {
     try {
+        if (!req?.query['teacherId'])
+            return res.status(400).send(`<h1>Querystring ausente ou inválida</h1> <p>- teacherId: ${!!req.query['teacherId']}</p>`);
 
-        let reportList: any[] = await getAllPresenceList(req, res, next);
+        let reportList = await getAllPresenceList(req, res, next);
         let classOfferList = await getClassOfferList(req, res, next);
 
         // Função para mesclar os arrays
