@@ -24,9 +24,7 @@ export interface Grade {
   student: {
     name: string
   }
-  subject: {
-    name: string
-  }
+  subject: any
 }
 
 export function ModalGrades({ open, handleClose, subjectData }: Props) {
