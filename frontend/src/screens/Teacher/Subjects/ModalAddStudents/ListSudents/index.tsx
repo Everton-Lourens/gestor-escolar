@@ -36,7 +36,8 @@ export function ListStudent({
   const handleButtonClick = async (item: { _id: any }) => {
     // TRABALHANDO1
 
-    if (!item['subject']) {
+    //if (!item['subject']) {
+    if (typeof item['_id'] === 'undefined') {
       setAlertNotifyConfigs({
         ...alertNotifyConfigs,
         open: true,

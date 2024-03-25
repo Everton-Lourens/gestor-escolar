@@ -83,7 +83,6 @@ DAQUI VEM O ID DA TURMA
               onClick={() => {
                 window.location.href = `/teacher/reports/${params.data._id}`
                 return;
-                MOSTRAR_RELATÓRIO_INDIVIDUAL(params.data);
                 //handleAddStudents(params.data)
               }}
               className={style.insertStudentsButton}
