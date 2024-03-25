@@ -32,6 +32,10 @@ export interface Presence {
   subject: string; // Assume-se que o tipo ObjectId seja representado como string
   createdAt: string; // Assume-se que a data seja representada como string ISO 8601
   __v: number;
+  firstPresence: number;
+  secondPresence: number;
+  presenceCount: number;
+  report: any;
 }
 
 export function ModalPresences({ open, handleClose, reportData, dateFilter }: Props) {
@@ -42,7 +46,7 @@ export function ModalPresences({ open, handleClose, reportData, dateFilter }: Pr
   const [editPresenceMode, setEditPresenceMode] = useState<boolean>(false)
   const [presenceToEditData, setPresenceToEditData] = useState<Presence | null>(null)
   const [presences, setPresences] = useState<Presence[]>([])
-  const [showDateFilter, setShowDateFilter] = useState<object>({})
+  const [showDateFilter, setShowDateFilter] = useState<any>({})
 
   function getPresences() {
     const subjectId: string = reportData?.subject[0]?._id;

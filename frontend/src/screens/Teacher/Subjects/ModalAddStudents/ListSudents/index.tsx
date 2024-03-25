@@ -119,7 +119,7 @@ export function ListStudent({
                 />
                 <Button
                   variant="contained"
-                  color={buttonConfig.color}
+                  color={buttonConfig.color as any}
                   size="small"
                   style={{ visibility: !item['subject'] ? 'hidden' : 'visible' }}
                   onClick={() => {

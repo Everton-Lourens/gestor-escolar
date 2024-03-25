@@ -1,7 +1,10 @@
 {
   "name": "gestor-escolar",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "engines": {
+    "node": "18.19.1"
+  },
   "scripts": {
     "start": "next start",
     "dev": "next dev -p 3003 ",

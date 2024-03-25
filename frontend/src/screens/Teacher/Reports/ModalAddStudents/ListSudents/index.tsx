@@ -33,10 +33,10 @@ export function ListStudent({
   const [buttonConfigs, setButtonConfigs] = useState<{ [key: string]: { text: string; color: string } }>({});
   const { alertNotifyConfigs, setAlertNotifyConfigs } = useContext(AlertContext)
 
-  const handleButtonClick = async (item: { _id: any }) => {
+  const handleButtonClick = async (item: { _id: any, presence: any }) => {
     // TRABALHANDO1
 
-    if (!item['report']) {
+    if (typeof item['_id'] === 'undefined') {
       setAlertNotifyConfigs({
         ...alertNotifyConfigs,
         open: true,
@@ -119,7 +119,7 @@ export function ListStudent({
                 />
                 <Button
                   variant="contained"
-                  color={buttonConfig.color}
+                  color={buttonConfig.color as any}
                   size="small"
                   style={{ visibility: !item['report'] ? 'hidden' : 'visible' }}
                   onClick={() => {

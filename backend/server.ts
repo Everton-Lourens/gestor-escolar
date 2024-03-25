@@ -18,7 +18,7 @@ interface CustomExpress extends Express {
 
 const app: CustomExpress = express()
 
-const PORT = process.env.SERVER_PORT
+const PORT = process.env.PORT || process.env.SERVER_PORT;
 
 app.mongo = dbConnection
 

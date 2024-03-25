@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Sistema de gestão escolar",
   "main": "server.js",
+  "engines": {
+    "node": "18.19.1"
+  },
   "scripts": {
-    "start": "node server.ts",
+    "start": "node server.js",
     "dev": "ts-node-dev --transpile-only server.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts,.js",
