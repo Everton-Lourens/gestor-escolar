@@ -18,6 +18,7 @@ export interface Student {
   _id: string
   name: string
   checked?: boolean
+  subject: object;
 }
 
 export function ModalAddStudents({
