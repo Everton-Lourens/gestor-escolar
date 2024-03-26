@@ -8,7 +8,7 @@ export function useFieldsMobile(): Field[] {
     },
     {
       field: 'percentNumber',
-      valueFormatter: (params: any) => Number(params?.value) <= 100 ? `${params?.value}%` : (Number(params?.value) > 100 ? `+100%` : '--'),
+      valueFormatter: (params: any) => Number(params?.value) <= 100 ? `${params?.value}%` : (Number(params?.value) > 100 ? `(+100%)` : '--'),
     },
   ]
 }

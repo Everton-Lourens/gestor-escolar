@@ -198,7 +198,7 @@ export function Reports() {
       <i>Dízimo total: {valueTotal?.totalTithing || 0},00</i>
       <i>Total de estudantes: {valueTotal?.totalStudents || 0}</i>
       <i>Presença total: {valueTotal?.totalPresence || 0}</i>
-      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? valueTotal?.totalPercent : (Number(valueTotal?.totalPercent) > 100 ? `+100%` : '--')}%</i>
+      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? valueTotal?.totalPercent : (Number(valueTotal?.totalPercent) > 100 ? `(+100%)` : '--')}%</i>
       =================
 
       <div className={style.viewDesktop}>
