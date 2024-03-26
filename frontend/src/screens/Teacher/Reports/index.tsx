@@ -95,19 +95,27 @@ export function Reports() {
           totalPresence: 0,
         };
 
+        let isInvalidPercent = false;
+
         res.data.items.forEach((element: {
           tithing: number;
           offer: number,
           studentsNumber: number,
           presenceNumber: number,
+          percentNumber: number,
         }) => {
           total.totalTithing += element.tithing;
           total.totalOffer += element.offer;
           total.totalStudents += element.studentsNumber;
           total.totalPresence += element.presenceNumber;
+          if (Number(element?.percentNumber) > 100)
+            isInvalidPercent = true;
         });
         const percent = (Number(total.totalPresence) || 0) / (Number(total.totalStudents)) * 100;
-        total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
+        if (isInvalidPercent)
+          total.totalPercent = 999; // porcentagem ficará com "(+100%)" para o usuário
+        else
+          total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
 
         setValueTotal(total);
       })
@@ -198,7 +206,7 @@ export function Reports() {
       <i>Dízimo total: {valueTotal?.totalTithing || 0},00</i>
       <i>Total de estudantes: {valueTotal?.totalStudents || 0}</i>
       <i>Presença total: {valueTotal?.totalPresence || 0}</i>
-      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? valueTotal?.totalPercent : (Number(valueTotal?.totalPercent) > 100 ? `(+100%)` : '--')}%</i>
+      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? `${valueTotal?.totalPercent}%` : (Number(valueTotal?.totalPercent) > 100 ? `--` : '--')}</i>
       =================
 
       <div className={style.viewDesktop}>
