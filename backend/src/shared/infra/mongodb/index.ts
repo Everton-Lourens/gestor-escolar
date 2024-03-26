@@ -5,8 +5,8 @@ dotenv.config()
 const MONGO_USERNAME = process.env.database_username
 const MONGO_PASSWORD = process.env.database_password
 
-const mongoURL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost:27017/admin`;
-//const mongoURL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@gestor-escolar-cluster.c2i24so.mongodb.net/`
+//const mongoURL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost:27017/admin`;
+const mongoURL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@gestor-escolar-cluster.c2i24so.mongodb.net/`
 
 mongoose.connect(mongoURL)
 mongoose.connection
