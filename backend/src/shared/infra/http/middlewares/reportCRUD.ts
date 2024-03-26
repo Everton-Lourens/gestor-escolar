@@ -131,7 +131,7 @@ export async function getClassOfferById(
         const userId = req.query.userId;
 
         // Converte o ID do professor para um ObjectId do mongoose.
-        const userObjectId = new mongoose.Types.ObjectId(userId);
+        const userObjectId = new mongoose.Types.ObjectId(userId as string);
 
         // Buscando ofertas e dizimos onde os dois não podem ser igualmente 0.
         const reportList: IOffer[] = await OfferModel.find({

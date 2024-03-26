@@ -43,7 +43,7 @@ export function useColumns({
       headerName: 'Porcentagem',
       field: 'percentNumber',
       valueFormatter: (params: CellFunctionParams<Report>) =>
-      `${params?.value}%` || '--',
+        Number(params?.value) <= 100 ? `${params?.value}%` : (Number(params?.value) > 100 ? `(inválido)` : '--'),
     },
     {
       headerName: 'Ofertas',

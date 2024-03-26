@@ -241,7 +241,7 @@ export async function getAllPresenceList(
                             $gte: startDate, // Data maior ou igual a startDate
                             $lte: endDate    // Data menor ou igual a endDate
                         },
-                        subject: new mongoose.Types.ObjectId(subjectId), // Filtrar por subjectId
+                        subject: new mongoose.Types.ObjectId(subjectId as string), // Filtrar por subjectId
                         teacher: new mongoose.Types.ObjectId(teacherId as string)// Filtrar por teacherId
                     }
                 },

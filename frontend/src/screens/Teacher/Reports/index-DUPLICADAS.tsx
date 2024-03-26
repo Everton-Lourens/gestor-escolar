@@ -30,7 +30,6 @@ interface ValueTotal {
   totalStudents?: number;
   totalPercent?: number;
   totalPresence?: number;
-  isInvalidPercent: boolean;
 }
 
 interface dateFilter {
@@ -76,7 +75,7 @@ export function Reports() {
   const [startDate, setStartDate] = useState<string>(startOfToday);
   const [endDate, setEndDate] = useState<string>(endOfToday);
   const [dateFilter, setDateFilter] = useState<dateFilter>({ dateQuery: '', startDate: '', endDate: '' });
-  const [valueTotal, setValueTotal] = useState<ValueTotal>({ totalOffer: 0, totalTithing: 0, totalStudents: 0, totalPercent: 0, totalPresence: 0, isInvalidPercent: false });
+  const [valueTotal, setValueTotal] = useState<ValueTotal>({ totalOffer: 0, totalTithing: 0, totalStudents: 0, totalPercent: 0, totalPresence: 0 });
 
   function getReports(startDateResponseFromFilter = '', endDateResponseFromFilter = '') {
     setLoadingReports(true);
@@ -97,6 +96,8 @@ export function Reports() {
           isInvalidPercent: false,
         };
 
+        let isInvalidPercent = false;
+
         res.data.items.forEach((element: {
           tithing: number;
           offer: number,
@@ -109,11 +110,21 @@ export function Reports() {
           total.totalStudents += element.studentsNumber;
           total.totalPresence += element.presenceNumber;
           if (Number(element?.percentNumber) > 100)
-            total.isInvalidPercent = true;
+            isInvalidPercent = true;
         });
         const percent = (Number(total.totalPresence) || 0) / (Number(total.totalStudents)) * 100;
-        total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
+        if (isInvalidPercent) {
+          total.totalPercent = 999; // porcentagem ficará com "(+100%)" para o usuário
 
+          res.data.items = res.data.items.map((element: {
+            percentNumber: number,
+          }) => {
+            return element.percentNumber = 999;
+          });
+
+        } else {
+          total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
+        }
         setValueTotal(total);
       })
       .catch((err) => {
@@ -199,13 +210,11 @@ export function Reports() {
       {/*reports['total'].offer*/}
       =================
       <br />
-      <i>— Oferta total: {valueTotal?.totalOffer || 0},00</i>
-      <i>— Dízimo total: {valueTotal?.totalTithing || 0},00</i>
-      <i>— Total de estudantes: {valueTotal?.totalStudents || 0}</i>
-      <i>— Presença total: {valueTotal?.totalPresence || 0}</i>
-      <i>— Porcentagem total: {valueTotal.isInvalidPercent ?
-        (`${valueTotal?.totalPercent || 0.00}% —> (Contém presenças duplicadas)`) :
-        (`${valueTotal?.totalPercent || 0.00}%`)}</i>
+      <i>Oferta total: {valueTotal?.totalOffer || 0},00</i>
+      <i>Dízimo total: {valueTotal?.totalTithing || 0},00</i>
+      <i>Total de estudantes: {valueTotal?.totalStudents || 0}</i>
+      <i>Presença total: {valueTotal?.totalPresence || 0}</i>
+      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? `${valueTotal?.totalPercent}%` : (Number(valueTotal?.totalPercent) > 100 ? `(Contém presenças duplicadas)` : '--')}</i>
       =================
 
       <div className={style.viewDesktop}>
