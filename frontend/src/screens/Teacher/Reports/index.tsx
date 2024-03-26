@@ -112,11 +112,18 @@ export function Reports() {
             isInvalidPercent = true;
         });
         const percent = (Number(total.totalPresence) || 0) / (Number(total.totalStudents)) * 100;
-        if (isInvalidPercent)
+        if (isInvalidPercent) {
           total.totalPercent = 999; // porcentagem ficará com "(+100%)" para o usuário
-        else
-          total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
 
+          res.data.items = res.data.items.map((element: {
+            percentNumber: number,
+          }) => {
+            return element.percentNumber = 999;
+          });
+
+        } else {
+          total.totalPercent = parseFloat(percent.toFixed(1)) || 0.00;
+        }
         setValueTotal(total);
       })
       .catch((err) => {
@@ -206,7 +213,7 @@ export function Reports() {
       <i>Dízimo total: {valueTotal?.totalTithing || 0},00</i>
       <i>Total de estudantes: {valueTotal?.totalStudents || 0}</i>
       <i>Presença total: {valueTotal?.totalPresence || 0}</i>
-      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? `${valueTotal?.totalPercent}%` : (Number(valueTotal?.totalPercent) > 100 ? `--` : '--')}</i>
+      <i>Porcentagem total: {Number(valueTotal?.totalPercent) <= 100 ? `${valueTotal?.totalPercent}%` : (Number(valueTotal?.totalPercent) > 100 ? `(Contém presenças duplicadas)` : '--')}</i>
       =================
 
       <div className={style.viewDesktop}>
